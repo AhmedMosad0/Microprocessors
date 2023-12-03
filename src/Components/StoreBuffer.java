@@ -4,11 +4,27 @@ import Helpers.Instruction;
 import Helpers.LSEntry;
 
 public class StoreBuffer {
+    private static LoadBuffer instance;
     static LSEntry[] buffer;
 
     public StoreBuffer(int size) {
         buffer = new LSEntry[size];
     }
+
+
+
+    public static LoadBuffer getInstance(int size) {
+        if (instance == null) {
+            instance = new LoadBuffer(size);
+
+            for(int i=0; i< size; i++) {
+			String tag = "S"+i;
+			instance.buffer[i] = new LSEntry(tag, false, 0 , 0 , "");
+		}
+        }
+        return instance;
+    }
+
 
     public boolean addNewEntry(Instruction instruction) {
         boolean contains = false;

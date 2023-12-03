@@ -25,10 +25,6 @@ public class LoadBuffer {
         return instance;
     }
 
-    public void initializeLoadBuffer() {
-		
-	}
-
     public static boolean addNewEntry(int address) {
         boolean contains = false;
         boolean enterdFlag = false;
