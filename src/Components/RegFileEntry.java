@@ -1,4 +1,4 @@
-package microprocessor;
+package Components;
 
 public class RegFileEntry {
 	String regName;

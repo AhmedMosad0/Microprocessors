@@ -1,14 +1,22 @@
 package Helpers;
 
 public class LSEntry {
-    public String name;
+    public String tag;
     public int address;
     public boolean busy = false;
-    public String V;
+    public double V;
     public String Q;
 
-    public String getName() {
-        return name;
+    public LSEntry(String tag, boolean busy, int address, double v, String q) {
+        this.tag = tag;
+        this.address = address;
+        this.busy = busy;
+        V = v;
+        Q = q;
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public int getAddress() {
@@ -19,8 +27,8 @@ public class LSEntry {
         return busy;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void settag(String tag) {
+        this.tag = tag;
     }
 
     public void setAddress(int address) {

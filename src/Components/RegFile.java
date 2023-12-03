@@ -1,7 +1,7 @@
-package microprocessor;
+package Components;
 
 public class RegFile {
-	RegFileEntry[] registerFile;
+	static RegFileEntry[] registerFile;
 	static final int size = 64;
 	
 	public RegFile() {
@@ -46,6 +46,10 @@ public class RegFile {
 				registerFile[i].Qi = "0";
 			}
 		}
+	}
+
+	public static RegFileEntry[] getRegisterFile() {
+		return registerFile;
 	}
 	
 }

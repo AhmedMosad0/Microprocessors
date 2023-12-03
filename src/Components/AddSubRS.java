@@ -1,4 +1,4 @@
-package microprocessor;
+package Components;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,7 +20,7 @@ public class AddSubRS {
 		}
 	}
 	
-	//gets tag of 1st available RS slot 
+	//gets tag of 1st available RS slot
 	String getFirstAvailableTag() {
 		for(int i=0; i<reservationStation.size(); i++) {
 			if(!reservationStation.get(i).busy) {
@@ -38,10 +38,12 @@ public class AddSubRS {
 		}
 	}
 	
+	
 	public boolean isStationFull() {
 		return reservationStation.isEmpty();
 	}
 	
+
 	public void delAddSubEntry(String targetTag) {
 	    Iterator<ReservationStationEntry> iterator = reservationStation.iterator();
 	    while (iterator.hasNext()) {

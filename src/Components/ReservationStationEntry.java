@@ -1,4 +1,4 @@
-package microprocessor;
+package Components;
 
 public class ReservationStationEntry {
 	String tag;
@@ -17,8 +17,5 @@ public class ReservationStationEntry {
 		this.qk = qk;
 		this.result = result;
 	}
-	
-	
-	
 	
 }

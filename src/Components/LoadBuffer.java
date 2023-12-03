@@ -4,15 +4,34 @@ import Helpers.LSEntry;
 
 public class LoadBuffer {
 
+    private static LoadBuffer instance;
     static LSEntry[] buffer;
-    static boolean enterdFlag = false;
+    int size;
 
     public LoadBuffer(int size) {
         buffer = new LSEntry[size];
+        this.size = size;
     }
 
-    public static boolean add(int address) {
+    public static LoadBuffer getInstance(int size) {
+        if (instance == null) {
+            instance = new LoadBuffer(size);
+
+            for(int i=0; i< size; i++) {
+			String tag = "L"+i;
+			instance.buffer[i] = new LSEntry(tag, false, 0 , 0 , "");
+		}
+        }
+        return instance;
+    }
+
+    public void initializeLoadBuffer() {
+		
+	}
+
+    public static boolean addNewEntry(int address) {
         boolean contains = false;
+        boolean enterdFlag = false;
 
         for (int i = 0; i < buffer.length; i++) {
             if (buffer[i].address == address) {
@@ -25,7 +44,6 @@ public class LoadBuffer {
             for (int i = 0; i < buffer.length; i++) {
                 if (!buffer[i].busy) {
                     buffer[i].address = address;
-                    buffer[i].name = "L" + i;
                     buffer[i].busy = true;
                     enterdFlag = true;
                     break;
@@ -42,11 +60,11 @@ public class LoadBuffer {
         return enterdFlag;
     }
 
-    public static void remove(String name) {
+    public static void removeEntry(String tag) {
         for (int i = 0; i < buffer.length; i++) {
-            if (buffer[i].name.equals(name)) {
-                buffer[i] = null;
-                buffer[i].busy = false;
+            if (buffer[i].tag.equals(tag)) {
+                LSEntry temp = new LSEntry(tag, false, 0, 0, "");
+                buffer[i] = temp;
             }
         }
     }
@@ -58,11 +76,15 @@ public class LoadBuffer {
         for (int i = 0; i < buffer.length; i++) {
             str += "-------------------------\n" +
                     "Busy: " + buffer[i].busy +
-                    "\nName: " + buffer[i].name +
+                    "\nTag: " + buffer[i].tag +
                     "\nAddress: " + buffer[i].address +
-                    "-------------------------\n";
+                    "\n-------------------------\n";
         }
 
         return str;
+    }
+
+    public static LSEntry[] getBuffer() {
+        return buffer;
     }
 }
