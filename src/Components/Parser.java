@@ -10,7 +10,11 @@ public class Parser {
 
     ArrayList<Instruction> instructions;
 
-    public void parse(String fileName) throws Exception {
+    public Parser() {
+        this.instructions = new ArrayList<>();
+    }
+
+    public ArrayList<Instruction> parse(String fileName) throws Exception {
 
         File file = new File(fileName);
         Scanner reader;
@@ -103,5 +107,6 @@ public class Parser {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return instructions;
     }
 }
