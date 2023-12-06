@@ -1,5 +1,6 @@
 package Components;
 
+import Helpers.Instruction;
 import Helpers.LSEntry;
 
 public class LoadBuffer {
@@ -17,43 +18,30 @@ public class LoadBuffer {
         if (instance == null) {
             instance = new LoadBuffer(size);
 
-            for(int i=0; i< size; i++) {
-			String tag = "L"+i;
-			instance.buffer[i] = new LSEntry(tag, false, 0 , 0 , "");
-		}
+            for (int i = 0; i < size; i++) {
+                String tag = "L" + i;
+                instance.buffer[i] = new LSEntry(tag, false, 0, 0, "");
+            }
         }
         return instance;
     }
 
-    public static boolean addNewEntry(int address) {
-        boolean contains = false;
-        boolean enterdFlag = false;
+    public static void addNewEntry(int address) {
+        boolean canAdd = canAdd(address);
 
-        for (int i = 0; i < buffer.length; i++) {
-            if (buffer[i].address == address) {
-                contains = true;
-                break;
-            }
-        }
-
-        if (!contains) {
-            for (int i = 0; i < buffer.length; i++) {
-                if (!buffer[i].busy) {
-                    buffer[i].address = address;
-                    buffer[i].busy = true;
-                    enterdFlag = true;
-                    break;
+        if (canAdd) {
+            int index = getFirstNotBusySlot();
+                if (index != -1) {
+                    buffer[index].address = address;
+                    buffer[index].busy = true;
                 } else {
-                    enterdFlag = false;
                     System.out.println("Load Buffer is full");
                 }
-            }
+            
         } else {
-            enterdFlag = false;
             System.out.println("This address is currently in the Load Buffer");
         }
 
-        return enterdFlag;
     }
 
     public static void removeEntry(String tag) {
@@ -63,6 +51,36 @@ public class LoadBuffer {
                 buffer[i] = temp;
             }
         }
+    }
+
+    public static int getFirstNotBusySlot() {
+        for (int i = 0; i < buffer.length; i++) {
+            if (!buffer[i].busy)
+                return i;
+        }
+        return -1;
+    }
+
+    public static boolean hasSpace() {
+        if (getFirstNotBusySlot() != -1)
+            return true;
+        else
+            return false;
+    }
+
+    public static boolean canAdd(int address) {
+
+        boolean canAdd = true;
+
+        for (int i = 0; i < buffer.length; i++) {
+            if (buffer[i].address == address) {
+                canAdd = false;
+                break;
+            }
+        }
+
+        return canAdd;
+
     }
 
     public String toString() {
