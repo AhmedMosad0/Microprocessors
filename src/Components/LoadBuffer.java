@@ -1,6 +1,5 @@
 package Components;
 
-import Helpers.Instruction;
 import Helpers.LSEntry;
 
 public class LoadBuffer {
@@ -34,12 +33,8 @@ public class LoadBuffer {
                 if (index != -1) {
                     buffer[index].address = address;
                     buffer[index].busy = true;
-                } else {
-                    System.out.println("Load Buffer is full");
                 }
             
-        } else {
-            System.out.println("This address is currently in the Load Buffer");
         }
 
     }
