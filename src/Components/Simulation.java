@@ -23,13 +23,13 @@ public class Simulation {
     int LoadLatency;
     int storeLatency;
     int cycleCount;
-    int instructionPointer;
+    int instructionPointer = 0;
     ArrayList<IssuingEntry> queue;
 
-    public Simulation(ArrayList<Instruction> instructions, AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
+    public Simulation(AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
             StoreBuffer storeBuffer,
             RegFile regFile, Cache cache, Scanner sc, int addLatency, int subLatency, int divLatency, int mulLatency,
-            int LoadLatency, int storeLatency, int cycleCount, int instructionPointer , ArrayList<IssuingEntry> queue) throws Exception {
+            int LoadLatency, int storeLatency, int cycleCount, ArrayList<IssuingEntry> queue) throws Exception {
         Parser p = new Parser();
         this.instructions = p.parse("instructions.txt");
         this.addSubRS = addSubRS;
@@ -46,17 +46,65 @@ public class Simulation {
         this.LoadLatency = Integer.parseInt(sc.nextLine());
         this.storeLatency = Integer.parseInt(sc.nextLine());
         this.cycleCount = cycleCount;
-        this.instructionPointer = instructionPointer;
         this.queue = queue;
     }
 
     public void runSimulation() {
-        while (!instructions.isEmpty()) {
+        for (int i = 0; !instructions.isEmpty(); i++) {
             // executeCycle(); //logic of execution of one cycle
             // cycleCount++;
 
+            issue();
+            executeCycle();
+
+            cycleCount++;
+
         }
 
+    }
+
+    public boolean issue() {
+        Instruction currentInstruction = instructions.get(instructionPointer);
+        switch (currentInstruction.operation) {
+            case "SD":
+
+                if (storeBuffer.hasSpace()) {
+
+                    if (storeBuffer.canAdd(currentInstruction)) {
+                        storeBuffer.addNewEntry(currentInstruction);
+                        IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
+                        queue.add(entry);
+                        return true;
+
+                    } else {
+                        System.out.println("Store Buffer or Load Buffer has the same effective address");
+                        return false;
+                    }
+                } else {
+                    System.out.println("Store Buffer is full");
+                    return false;
+                }
+
+            case "LD":
+                if (loadBuffer.hasSpace()) {
+
+                    if (loadBuffer.canAdd(currentInstruction.address)) {
+                        loadBuffer.addNewEntry(currentInstruction.address);
+                        IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
+                        queue.add(entry);
+                        return true;
+
+                    } else {
+                        System.out.println("Load Buffer has the same effective address");
+                        return false;
+                    }
+                } else {
+                    System.out.println("Store Buffer is full");
+                    return false;
+                }
+
+        }
+        return false;
     }
 
     // at every clock cycle
@@ -84,8 +132,6 @@ public class Simulation {
 
                     if (storeBuffer.canAdd(currentInstruction)) {
                         storeBuffer.addNewEntry(currentInstruction);
-                        IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
-                        queue.add(entry);
                     } else
                         System.out.println("Store Buffer or Load Buffer has the same effective address");
                 } else
@@ -111,6 +157,15 @@ public class Simulation {
 
         }
 
+    }
+
+    public void printCycle(int cycle){
+        System.out.println(cycle + "\n////////////////////////");
+        // addSubRS.toString();
+        // mulDivRS.toString();
+        loadBuffer.toString();
+        storeBuffer.toString();
+        // regFile.toString();
     }
 
     // public void checkStoreEmptySlot(){

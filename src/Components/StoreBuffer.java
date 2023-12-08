@@ -33,12 +33,14 @@ public class StoreBuffer {
 
         if (canAdd) {
             for (int i = 0; i < regFile.length; i++) {
-                if (instruction.r1.equals(regFile[i].Qi)) {
+                if (instruction.r1.equals(regFile[i].regName)) {
+                    if(!regFile[i].Qi.equals("0")){
                     q = regFile[i].Qi;
                 } else {
                     value = regFile[i].value;
                 }
             }
+        }
 
             int index = getFirstNotBusySlot();
                 if (index != -1) {
