@@ -55,7 +55,7 @@ public class Simulation {
         for (int i = 0; !instructions.isEmpty(); i++) {
             // executeCycle(); //logic of execution of one cycle
             // cycleCount++;
-            printCycle(cycleCount);
+            printCycle(cycleCount);///////////////// do toString method to all RS
 
             issue();
             updateStations(); //////////////////////////// get the value from the regFile to the RS
