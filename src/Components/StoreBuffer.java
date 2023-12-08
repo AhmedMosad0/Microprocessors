@@ -34,22 +34,22 @@ public class StoreBuffer {
         if (canAdd) {
             for (int i = 0; i < regFile.length; i++) {
                 if (instruction.r1.equals(regFile[i].regName)) {
-                    if(!regFile[i].Qi.equals("0")){
-                    q = regFile[i].Qi;
-                } else {
-                    value = regFile[i].value;
+                    if (!regFile[i].Qi.equals("0")) {
+                        q = regFile[i].Qi;
+                    } else {
+                        value = regFile[i].value;
+                    }
                 }
             }
-        }
 
             int index = getFirstNotBusySlot();
-                if (index != -1) {
-                    buffer[index].address = instruction.address;
-                    buffer[index].busy = true;
-                    buffer[index].Q = q;
-                    buffer[index].V = value;
-                }
-            
+            if (index != -1) {
+                buffer[index].busy = true;
+                buffer[index].address = instruction.address;
+                buffer[index].Q = q;
+                buffer[index].V = value;
+            }
+
         }
 
     }

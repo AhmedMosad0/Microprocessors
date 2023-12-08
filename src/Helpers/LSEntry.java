@@ -4,10 +4,10 @@ public class LSEntry {
     public String tag;
     public int address;
     public boolean busy = false;
-    public double V;
+    public float V;
     public String Q;
 
-    public LSEntry(String tag, boolean busy, int address, double v, String q) {
+    public LSEntry(String tag, boolean busy, int address, float v, String q) {
         this.tag = tag;
         this.address = address;
         this.busy = busy;

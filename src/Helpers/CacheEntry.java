@@ -2,10 +2,10 @@ package Helpers;
 
 public class CacheEntry {
     int address;
-    int value;
+    float value;
 
     
-    public CacheEntry(int address, int value) {
+    public CacheEntry(int address, float value) {
         this.address = address;
         this.value = value;
     }
@@ -16,7 +16,7 @@ public class CacheEntry {
     }
 
 
-    public int getValue() {
+    public float getValue() {
         return value;
     }
 
@@ -26,7 +26,7 @@ public class CacheEntry {
     }
 
 
-    public void setValue(int value) {
+    public void setValue(float value) {
         this.value = value;
     }
 

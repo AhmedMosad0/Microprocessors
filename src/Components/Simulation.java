@@ -3,6 +3,7 @@ package Components;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Helpers.CacheEntry;
 import Helpers.Instruction;
 import Helpers.InstructionState;
 import Helpers.IssuingEntry;
@@ -20,7 +21,7 @@ public class Simulation {
     int subLatency;
     int divLatency;
     int mulLatency;
-    int LoadLatency;
+    int loadLatency;
     int storeLatency;
     int cycleCount;
     int instructionPointer = 0;
@@ -43,13 +44,13 @@ public class Simulation {
         this.subLatency = Integer.parseInt(sc.nextLine());
         this.divLatency = Integer.parseInt(sc.nextLine());
         this.mulLatency = Integer.parseInt(sc.nextLine());
-        this.LoadLatency = Integer.parseInt(sc.nextLine());
+        this.loadLatency = Integer.parseInt(sc.nextLine());
         this.storeLatency = Integer.parseInt(sc.nextLine());
         this.cycleCount = cycleCount;
         this.queue = queue;
     }
 
-    public void runSimulation() {
+    public void runSimulation() throws Exception {
         for (int i = 0; !instructions.isEmpty(); i++) {
             // executeCycle(); //logic of execution of one cycle
             // cycleCount++;
@@ -108,58 +109,99 @@ public class Simulation {
     }
 
     // at every clock cycle
-    public void executeCycle() {
+    public void executeCycle() throws Exception {
         // check operation
-        Instruction currentInstruction = instructions.get(instructionPointer);
-        // check reservation station of operation
-        // handle issuing
-        switch (currentInstruction.operation) {
-            case "ADD":
-                if (!addSubRS.isStationFull()) {
-                    // addToAddSubRS()
-                }
+        Instruction currentInstruction;
+        for (int i = 0; i < queue.size(); i++) {
+            currentInstruction = queue.get(i).getInstruction();
 
-                break;
-            case "MUL":
-                if (!mulDivRS.isStationFull()) {
-                    // addToMulDivRS()
-                }
+            // check reservation station of operation
+            // handle issuing
+            switch (currentInstruction.operation) {
+                case "ADD":
+                    if (!addSubRS.isStationFull()) {
+                        // addToAddSubRS()
+                    }
 
-                break;
-            case "SD":
+                    break;
+                case "MUL":
+                    if (!mulDivRS.isStationFull()) {
+                        // addToMulDivRS()
+                    }
 
-                if (storeBuffer.hasSpace()) {
+                    break;
+                case "SD":
+                    for (int j = 0; j < storeBuffer.buffer.length; j++) {
+                        if (storeBuffer.buffer[j].address == currentInstruction.address) {
 
-                    if (storeBuffer.canAdd(currentInstruction)) {
-                        storeBuffer.addNewEntry(currentInstruction);
-                    } else
-                        System.out.println("Store Buffer or Load Buffer has the same effective address");
-                } else
-                    System.out.println("Store Buffer is full");
+                            if (storeBuffer.buffer[j].Q.equals("0")) {
+                                
+                                if (queue.get(i).getState().equals(InstructionState.Writing)) {
+                                    cache.entry(new CacheEntry(currentInstruction.address, storeBuffer.buffer[j].V));
+                                    queue.get(i).setState(InstructionState.Finished);
+                                }
 
-                break;
+                                else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-            case "LD":
-                if (loadBuffer.hasSpace()) {
+                                    if ((queue.get(i).getStartExecution() + storeLatency == cycleCount)) {
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    }
+                                } 
 
-                    if (loadBuffer.canAdd(currentInstruction.address)) {
-                        loadBuffer.addNewEntry(currentInstruction.address);
-                        IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
-                        queue.add(entry);
-                    } else
-                        System.out.println("Load Buffer has the same effective address");
-                } else
-                    System.out.println("Store Buffer is full");
+                                else if (queue.get(i).getState().equals(InstructionState.Issued)) {
+                                    queue.get(i).setStartExecution(cycleCount);
+                                    queue.get(i).setState(InstructionState.Executing);
+                                }
+                            }
 
-                break;
-            // case "SD": checkStoreEmptySlot();break;
-            // case "LD": checkLoadSubEmptySlot();break;
+                            ///// set StartExecution(clock Cycle)
+                            ///// if(startExecution + latency = clock cycle) actually execute
+                            ///// else
+                        }
+                    }
 
+                    break;
+
+                case "LD":
+                   for (int j = 0; j < loadBuffer.buffer.length; j++) {
+                        if (loadBuffer.buffer[j].address == currentInstruction.address) {
+                                
+                                if (queue.get(i).getState().equals(InstructionState.Writing)) {
+                                    float value = cache.getAddressValue(currentInstruction.address);
+                                    regFile.writeResultToRegFile(currentInstruction.r1, value);
+                                    queue.get(i).setState(InstructionState.Finished);
+                                }
+
+                                else if (queue.get(i).getState().equals(InstructionState.Executing)) {
+
+                                    if ((queue.get(i).getStartExecution() + loadLatency == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    }
+                                } 
+
+                                else if (queue.get(i).getState().equals(InstructionState.Issued)) {
+                                    queue.get(i).setStartExecution(cycleCount);
+                                    queue.get(i).setState(InstructionState.Executing);
+                                }
+                            
+
+                            ///// set StartExecution(clock Cycle)
+                            ///// if(startExecution + latency = clock cycle) actually execute
+                            ///// else
+                        }
+                    }
+
+                    break;
+                // case "SD": checkStoreEmptySlot();break;
+                // case "LD": checkLoadSubEmptySlot();break;
+
+            }
         }
 
     }
 
-    public void printCycle(int cycle){
+    public void printCycle(int cycle) {
         System.out.println(cycle + "\n////////////////////////");
         // addSubRS.toString();
         // mulDivRS.toString();

@@ -21,7 +21,7 @@ public class Cache {
         if (cache.size() < size) {
             for (int i = 0; i < cache.size(); i++) {
                 if (cache.get(i).getAddress() == entry.getAddress()) {
-                    cache.get(i).setAddress(entry.getValue());
+                    cache.get(i).setValue(entry.getValue());
                     contains = true;
                     break;
                 }
@@ -37,7 +37,7 @@ public class Cache {
         return enterdFlag;
     }
 
-    public int getAddressValue(int address) throws Exception {
+    public float getAddressValue(int address) throws Exception {
 
         for (int i = 0; i < cache.size(); i++) {
             if (cache.get(i).getAddress() == address) {
