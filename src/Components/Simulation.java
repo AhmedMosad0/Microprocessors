@@ -58,7 +58,7 @@ public class Simulation {
             printCycle(cycleCount);
 
             issue();
-            updateStations();
+            updateStations(); //////////////////////////// get the value from the regFile to the RS
             executeCycle();
 
             cycleCount++;
