@@ -2,6 +2,7 @@ package Components;
 
 import Helpers.Instruction;
 import Helpers.LSEntry;
+import Helpers.RegFileEntry;
 
 public class StoreBuffer {
     private static StoreBuffer instance;
@@ -33,11 +34,11 @@ public class StoreBuffer {
 
         if (canAdd) {
             for (int i = 0; i < regFile.length; i++) {
-                if (instruction.r1.equals(regFile[i].regName)) {
-                    if (!regFile[i].Qi.equals("0")) {
-                        q = regFile[i].Qi;
+                if (instruction.r1.equals(regFile[i].getRegName())) {
+                    if (!regFile[i].getQi().equals("0")) {
+                        q = regFile[i].getQi();
                     } else {
-                        value = regFile[i].value;
+                        value = regFile[i].getValue();
                     }
                 }
             }

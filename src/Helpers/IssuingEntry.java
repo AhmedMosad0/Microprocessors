@@ -5,6 +5,7 @@ public class IssuingEntry {
     Instruction instruction;
     InstructionState state;
     int startExecution;
+    int issueCycle;
 
 
     public IssuingEntry(Instruction instruction, InstructionState state) {
@@ -20,6 +21,16 @@ public class IssuingEntry {
 
     public void setStartExecution(int startExecution) {
         this.startExecution = startExecution;
+    }
+
+
+    public int getIssueCycle() {
+        return issueCycle;
+    }
+
+
+    public void setIssueCycle(int issueCycle) {
+        this.issueCycle = issueCycle;
     }
 
 

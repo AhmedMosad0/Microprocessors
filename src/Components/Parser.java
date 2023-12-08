@@ -26,7 +26,7 @@ public class Parser {
                 String r2 = "";
                 String r3 = "";
                 int address = -1;
-                int immediate = -1;
+                float immediate = -1;
                 String operation = "";
                 String branchLocation = "";
                 switch (line[0]) {
@@ -73,7 +73,7 @@ public class Parser {
 
                         r1 = line[1].substring(1);
                         r2 = line[2].substring(1);
-                        immediate = Integer.parseInt(line[3].substring(1));
+                        immediate = Float.parseFloat(line[3].substring(1));
                         break;
 
                     case "SUBI":
@@ -81,7 +81,7 @@ public class Parser {
 
                         r1 = line[1].substring(1);
                         r2 = line[2].substring(1);
-                        immediate = Integer.parseInt(line[3].substring(1));
+                        immediate = Float.parseFloat(line[3].substring(1));
                         break;
 
                     case "BNEZ":

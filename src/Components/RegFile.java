@@ -1,5 +1,7 @@
 package Components;
 
+import Helpers.RegFileEntry;
+
 public class RegFile {
 	static RegFileEntry[] registerFile;
 	static final int size = 64;
@@ -23,8 +25,8 @@ public class RegFile {
 	//call this when running main simulation to load into register file
 	void loadIntoRegFile(String regName, float value) {
 		for(int i=0; i< this.registerFile.length; i++) {
-			if(registerFile[i].regName.equals(regName)) {
-				registerFile[i].value = value;
+			if(registerFile[i].getRegName().equals(regName)) {
+				registerFile[i].setValue(value);
 			}
 		}
 	}
@@ -32,8 +34,8 @@ public class RegFile {
 	//issue stage
 	void addRegFileEntry(String regName, String insTag) {
 		for(int i=0; i< this.registerFile.length; i++) {
-			if(registerFile[i].regName.equals(regName)) {
-				registerFile[i].Qi = insTag;
+			if(registerFile[i].getRegName().equals(regName)) {
+				registerFile[i].setQi(insTag);
 			}
 		}
 	}
@@ -41,9 +43,9 @@ public class RegFile {
 	//write result stage
 	void writeResultToRegFile(String regName, float value) {
 		for(int i=0; i< this.registerFile.length; i++) {
-			if(registerFile[i].regName.equals(regName)) {
-				registerFile[i].value = value;
-				registerFile[i].Qi = "0";
+			if(registerFile[i].getRegName().equals(regName)) {
+				registerFile[i].setValue(value);
+				registerFile[i].setQi("0");
 			}
 		}
 	}

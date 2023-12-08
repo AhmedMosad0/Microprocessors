@@ -6,7 +6,7 @@ public class Instruction {
     public String r2;
     public String r3;
     public int address;
-    public int immediate;
+    public float immediate;
     public String operation;
     public String branchLocation;
 
@@ -23,7 +23,7 @@ public class Instruction {
     public int getAddress() {
         return address;
     }
-    public int getImmediate() {
+    public float getImmediate() {
         return immediate;
     }
     public void setR1(String r1) {
@@ -38,7 +38,7 @@ public class Instruction {
     public void setAddress(int address) {
         this.address = address;
     }
-    public void setImmediate(int immediate) {
+    public void setImmediate(float immediate) {
         this.immediate = immediate;
     }
     public void setOperation(String operation) {
