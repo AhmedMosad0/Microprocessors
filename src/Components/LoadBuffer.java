@@ -1,6 +1,8 @@
 package Components;
 
+import Helpers.Instruction;
 import Helpers.LSEntry;
+import Helpers.RegFileEntry;
 
 public class LoadBuffer {
 
@@ -25,12 +27,20 @@ public class LoadBuffer {
         return instance;
     }
 
-    public static void addNewEntry(int address) {
+    public static void addNewEntry(Instruction instruction) {
+        RegFileEntry[] regFile = RegFile.getRegisterFile();
+        int address = instruction.getAddress();
         boolean canAdd = canAdd(address);
 
         if (canAdd) {
             int index = getFirstNotBusySlot();
                 if (index != -1) {
+                    for(int i = 0 ; i < regFile.length ; i++ ){
+                        if(instruction.getR1().equals(regFile[i].getRegName())){
+                            regFile[i].setQi(buffer[index].getTag());
+                            break;
+                        }
+                    }
                     buffer[index].address = address;
                     buffer[index].busy = true;
                 }

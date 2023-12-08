@@ -20,7 +20,7 @@ public class MulDivRS {
 		//reservationStation = new LinkedList<>();
 		for(int i=0; i< this.size; i++) {
 			String tag = "M"+i;
-			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0 , 0.0 , "0" , "0" , 0));
+			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0 , 0.0 , "0" , "0" , 0 , 0));
 		}
 	}
 	
@@ -40,6 +40,10 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 		for (int i = 0; i < reservationStation.size(); i++) {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
+					if (regFile[j].getRegName().equals(instruction.getR1())) {
+						regFile[j].setQi(reservationStation.get(i).getTag());
+					}
+
 					if (regFile[j].getRegName().equals(instruction.getR2())) {
 						if (!regFile[j].getQi().equals("0")) {
 							reservationStation.get(i).setQj(regFile[j].getQi());
@@ -48,6 +52,7 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 							reservationStation.get(i).setQj("0");
 						}
 					}
+
 					if (regFile[j].getRegName().equals(instruction.getR3())) {
 						if (!regFile[j].getQi().equals("0")) {
 							reservationStation.get(i).setQk(regFile[j].getQi());
@@ -61,7 +66,7 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 				ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
 						reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
 						reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
-						reservationStation.get(i).getQk(), reservationStation.get(i).getResult());
+						reservationStation.get(i).getQk(), reservationStation.get(i).getResult() , 0);
 
 				entry.setEntryCycle(cycleCount);
 				

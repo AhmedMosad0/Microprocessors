@@ -8,8 +8,9 @@ public class ReservationStationEntry {
 	String qj, qk;
 	float result;
 	int entryCycle;
+	int branchAddress;
 	
-	public ReservationStationEntry(String tag, boolean busy, String operation, double vj, double vk, String qj, String qk, float result) {
+	public ReservationStationEntry(String tag, boolean busy, String operation, double vj, double vk, String qj, String qk, float result, int branchAddress) {
 		this.tag = tag;
 		this.busy = busy;
 		this.operation = operation;
@@ -18,6 +19,15 @@ public class ReservationStationEntry {
 		this.qj = qj;
 		this.qk = qk;
 		this.result = result;
+		this.branchAddress = branchAddress;
+	}
+
+	public int getBranchAddress() {
+		return branchAddress;
+	}
+
+	public void setBranchAddress(int branchAddress) {
+		this.branchAddress = branchAddress;
 	}
 
 	public String getTag() {

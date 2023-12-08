@@ -28,7 +28,7 @@ public class Parser {
                 int address = -1;
                 float immediate = -1;
                 String operation = "";
-                String branchLocation = "";
+                int branchLocation = -1;
                 switch (line[0]) {
                     case "LD":
                         operation = "LD";
@@ -88,7 +88,7 @@ public class Parser {
                         operation = "BNEZ";
 
                         r1 = line[1].substring(1);
-                        branchLocation = line[2].substring(1);
+                        branchLocation = Integer.parseInt(line[2].substring(1));
                         break;
 
                     default:

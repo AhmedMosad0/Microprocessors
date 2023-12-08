@@ -10,7 +10,7 @@ public class AddSubRS {
 	LinkedList<ReservationStationEntry> reservationStation = new LinkedList<>();
 	int size;
 
-	public AddSubRS(LinkedList<ReservationStationEntry> reservationStation , int size) {
+	public AddSubRS(LinkedList<ReservationStationEntry> reservationStation, int size) {
 		this.reservationStation = reservationStation;
 		this.size = size;
 	}
@@ -19,7 +19,7 @@ public class AddSubRS {
 		// reservationStation = new LinkedList<>();
 		for (int i = 0; i < this.size; i++) {
 			String tag = "A" + i;
-			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0, 0.0, "0", "0", 0));
+			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0, 0.0, "0", "0", 0 , 0));
 		}
 	}
 
@@ -41,26 +41,46 @@ public class AddSubRS {
 		return "";
 	}
 
-	public void addNewEntry(Instruction instruction , int cycleCount) {
+	public void addNewEntry(Instruction instruction, int cycleCount) {
 		RegFileEntry[] regFile = RegFile.getRegisterFile();
 
 		for (int i = 0; i < reservationStation.size(); i++) {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
-					if (regFile[j].getRegName().equals(instruction.getR2())) {
-						if (!regFile[j].getQi().equals("0")) {
-							reservationStation.get(i).setQj(regFile[j].getQi());
-						} else {
-							reservationStation.get(i).setVj(regFile[j].getValue());
-							reservationStation.get(i).setQj("0");
+
+					if (instruction.operation.equals("ADD") || instruction.operation.equals("SUB")) {
+
+						if (regFile[j].getRegName().equals(instruction.getR1())) {
+							regFile[j].setQi(reservationStation.get(i).getTag());
 						}
-					}
-					if (regFile[j].getRegName().equals(instruction.getR3())) {
-						if (!regFile[j].getQi().equals("0")) {
-							reservationStation.get(i).setQk(regFile[j].getQi());
-						} else {
-							reservationStation.get(i).setVk(regFile[j].getValue());
-							reservationStation.get(i).setQk("0");
+
+						if (regFile[j].getRegName().equals(instruction.getR2())) {
+							if (!regFile[j].getQi().equals("0")) {
+								reservationStation.get(i).setQj(regFile[j].getQi());
+							} else {
+								reservationStation.get(i).setVj(regFile[j].getValue());
+								reservationStation.get(i).setQj("0");
+							}
+						}
+
+						if (regFile[j].getRegName().equals(instruction.getR3())) {
+							if (!regFile[j].getQi().equals("0")) {
+								reservationStation.get(i).setQk(regFile[j].getQi());
+							} else {
+								reservationStation.get(i).setVk(regFile[j].getValue());
+								reservationStation.get(i).setQk("0");
+							}
+						}
+					} else {
+
+						if (regFile[j].getRegName().equals(instruction.getR1())) {
+							if (!regFile[j].getQi().equals("0")) {
+								reservationStation.get(i).setQj(regFile[j].getQi());
+							} else {
+								reservationStation.get(i).setVj(regFile[j].getValue());
+								reservationStation.get(i).setQj("0");
+							}
+							reservationStation.get(i).setBranchAddress(instruction.getBranchLocation());
 						}
 					}
 				}
@@ -68,7 +88,7 @@ public class AddSubRS {
 				ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
 						reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
 						reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
-						reservationStation.get(i).getQk(), reservationStation.get(i).getResult());
+						reservationStation.get(i).getQk(), reservationStation.get(i).getResult(), reservationStation.get(i).getBranchAddress());
 
 				entry.setEntryCycle(cycleCount);
 

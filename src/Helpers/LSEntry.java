@@ -31,6 +31,22 @@ public class LSEntry {
         this.tag = tag;
     }
 
+    public float getV() {
+        return V;
+    }
+
+    public void setV(float v) {
+        V = v;
+    }
+
+    public String getQ() {
+        return Q;
+    }
+
+    public void setQ(String q) {
+        Q = q;
+    }
+
     public void setAddress(int address) {
         this.address = address;
     }

@@ -8,7 +8,7 @@ public class Instruction {
     public int address;
     public float immediate;
     public String operation;
-    public String branchLocation;
+    public int branchLocation;
 
     
     public String getR1() {
@@ -44,13 +44,13 @@ public class Instruction {
     public void setOperation(String operation) {
         this.operation = operation;
     }
-    public void setBranchLocation(String branchLocation) {
+    public void setBranchLocation(int branchLocation) {
         this.branchLocation = branchLocation;
     }
     public String getOperation() {
         return operation;
     }
-    public String getBranchLocation() {
+    public int getBranchLocation() {
         return branchLocation;
     }
 }
