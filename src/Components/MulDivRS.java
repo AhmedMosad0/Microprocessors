@@ -98,6 +98,25 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 	        }
 	    }
 	}
+
+	public String toString() {
+		String str = "MulDiv Reservation Station\n";
+
+		for (ReservationStationEntry entry : reservationStation) {
+			str += "-------------------------\n" +
+					"Busy: " + entry.isBusy() +
+					"\nTag: " + entry.getTag() +
+					"\nOp: " + entry.getOperation() +
+					"\nVj: " + entry.getVj() +
+					"\nVk: " + entry.getVk() +
+					"\nQj: " + entry.getQj() +
+					"\nQk: " + entry.getQk() +
+					"\n-------------------------\n";
+		}
+
+		return str;
+	}
+
 	
 	
 	

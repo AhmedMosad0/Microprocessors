@@ -125,12 +125,12 @@ public class AddSubRS {
 		for (ReservationStationEntry entry : reservationStation) {
 			str += "-------------------------\n" +
 					"Busy: " + entry.isBusy() +
-					"  Tag: " + entry.getTag() +
-					"  Op: " + entry.getOperation() +
-					"  Vj: " + entry.getVj() +
-					"  Vk: " + entry.getVk() +
-					"  Qj: " + entry.getQj() +
-					"  Qk: " + entry.getQk() +
+					"\nTag: " + entry.getTag() +
+					"\nOp: " + entry.getOperation() +
+					"\nVj: " + entry.getVj() +
+					"\nVk: " + entry.getVk() +
+					"\nQj: " + entry.getQj() +
+					"\nQk: " + entry.getQk() +
 					"\n-------------------------\n";
 		}
 

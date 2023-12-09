@@ -28,6 +28,7 @@ public class Simulation {
     int cycleCount = 1;
     int instructionPointer = 0;
     ArrayList<IssuingEntry> queue;
+    boolean branchStall = false;
 
     public Simulation(AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
             StoreBuffer storeBuffer,
@@ -57,12 +58,20 @@ public class Simulation {
             // cycleCount++;
             printCycle(cycleCount);///////////////// do toString method to all RS
 
-            issue();
-            updateStations(); //////////////////////////// get the value from the regFile to the RS
+            boolean issued = false;
+
+            if (!branchStall) {
+                issued = issue();
+            }
+
+            updateStations();
             executeCycle();
 
             cycleCount++;
-            instructionPointer++;
+
+            if (issued) {
+                instructionPointer++;
+            }
 
         }
 
@@ -115,10 +124,11 @@ public class Simulation {
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
                     entry.setIssueCycle(cycleCount);
                     queue.add(entry);
+                    return true;
                 } else {
                     System.out.println("Add/Sub RS is full");
+                    return false;
                 }
-                break;
 
             case "SUB":
                 if (!addSubRS.isStationFull()) {
@@ -126,10 +136,11 @@ public class Simulation {
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
                     entry.setIssueCycle(cycleCount);
                     queue.add(entry);
+                    return true;
                 } else {
                     System.out.println("Add/Sub RS is full");
+                    return false;
                 }
-                break;
 
             case "MUL":
                 if (!mulDivRS.isStationFull()) {
@@ -137,10 +148,11 @@ public class Simulation {
                     mulDivRS.addNewEntry(currentInstruction, cycleCount);
                     entry.setIssueCycle(cycleCount);
                     queue.add(entry);
+                    return true;
                 } else {
                     System.out.println("Mul/Div RS is full");
+                    return false;
                 }
-                break;
 
             case "DIV":
                 if (!mulDivRS.isStationFull()) {
@@ -148,10 +160,11 @@ public class Simulation {
                     mulDivRS.addNewEntry(currentInstruction, cycleCount);
                     entry.setIssueCycle(cycleCount);
                     queue.add(entry);
+                    return true;
                 } else {
                     System.out.println("Mul/Div RS is full");
+                    return false;
                 }
-                break;
 
             case "BNEZ":
                 if (!addSubRS.isStationFull()) {
@@ -159,11 +172,12 @@ public class Simulation {
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
                     entry.setIssueCycle(cycleCount);
                     queue.add(entry);
+                    branchStall = true;
+                    return true;
                 } else {
                     System.out.println("Add/Sub RS is full");
+                    return false;
                 }
-                break;
-
         }
         return false;
     }
@@ -179,6 +193,10 @@ public class Simulation {
                         for (int k = 0; k < regFile.registerFile.length; k++) {
                             if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
                                 addS.setQj(regFile.registerFile[k].getQi());
+                                if (addS.getQj().equals("0")) {
+                                    addS.setVj(regFile.registerFile[k].getValue());
+                                }
+                                break;
                             }
                         }
                     }
@@ -186,6 +204,10 @@ public class Simulation {
                         for (int k = 0; k < regFile.registerFile.length; k++) {
                             if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
                                 addS.setQk(regFile.registerFile[k].getQi());
+                                if (addS.getQk().equals("0")) {
+                                    addS.setVk(regFile.registerFile[k].getValue());
+                                }
+                                break;
                             }
                         }
                     }
@@ -200,6 +222,10 @@ public class Simulation {
                         for (int k = 0; k < regFile.registerFile.length; k++) {
                             if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
                                 mulS.setQj(regFile.registerFile[k].getQi());
+                                if (mulS.getQj().equals("0")) {
+                                    mulS.setVj(regFile.registerFile[k].getValue());
+                                }
+                                break;
                             }
                         }
                     }
@@ -207,6 +233,10 @@ public class Simulation {
                         for (int k = 0; k < regFile.registerFile.length; k++) {
                             if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
                                 mulS.setQk(regFile.registerFile[k].getQi());
+                                if (mulS.getQk().equals("0")) {
+                                    mulS.setVk(regFile.registerFile[k].getValue());
+                                }
+                                break;
                             }
                         }
                     }
@@ -221,6 +251,9 @@ public class Simulation {
                         for (int k = 0; k < regFile.registerFile.length; k++) {
                             if (current.getR1().equals(regFile.registerFile[k].getRegName())) {
                                 entry.setQ(regFile.registerFile[k].getQi());
+                                if (entry.getQ().equals("0")) {
+                                    entry.setV(regFile.registerFile[k].getValue());
+                                }
                                 break;
                             }
                         }
@@ -425,11 +458,11 @@ public class Simulation {
                             if (current.getQj().equals("0") && current.getQk().equals("0")) {
 
                                 if (queue.get(i).getState().equals(InstructionState.Writing)) {
-                                    if(current.getResult() == 1){
-                                        /////// branch 3andaha address to go to mesh tag
+                                    if (current.getResult() == 1) {
+                                        current.setBranchAddress(1);
                                         instructionPointer = current.getBranchAddress();
-                                        
                                     }
+                                    branchStall = false;
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
                                 }
@@ -528,10 +561,10 @@ public class Simulation {
 
     }
 
-    public void flush(int c){
-        for(int i = c ; i < queue.size(); i ++){
+    public void flush(int c) {
+        for (int i = c; i < queue.size(); i++) {
             queue.remove(i);
-            ////////undo everything done 
+            //////// undo everything done
         }
     }
 

@@ -1,6 +1,7 @@
 package Components;
 
 import Helpers.RegFileEntry;
+import Helpers.ReservationStationEntry;
 
 public class RegFile {
 	static RegFileEntry[] registerFile;
@@ -54,4 +55,19 @@ public class RegFile {
 		return registerFile;
 	}
 	
+
+	public String toString() {
+		String str = "Register File\n";
+
+		for (int i = 0 ; i < registerFile.length ; i++) {
+			str += "-------------------------\n" +
+					"\nRegister Name: " + registerFile[i].getRegName() +
+					"\nQi: " + registerFile[i].getQi() +
+					"\nValue: " + registerFile[i].getValue() +
+					"\n-------------------------\n";
+		}
+
+		return str;
+	}
+
 }
