@@ -19,7 +19,7 @@ public class AddSubRS {
 		// reservationStation = new LinkedList<>();
 		for (int i = 0; i < this.size; i++) {
 			String tag = "A" + i;
-			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0, 0.0, "0", "0", 0 , 0));
+			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0, 0.0, "0", "0", 0, 0));
 		}
 	}
 
@@ -48,14 +48,12 @@ public class AddSubRS {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
 
-					if (instruction.operation.equals("ADD") || instruction.operation.equals("SUB")) {
-
-						if (regFile[j].getRegName().equals(instruction.getR1())) {
-							regFile[j].setQi(reservationStation.get(i).getTag());
-						}
+					if (instruction.operation.equals("ADD") || instruction.operation.equals("SUB")
+							|| instruction.operation.equals("SUBI") || instruction.operation.equals("ADDI")) {
 
 						if (regFile[j].getRegName().equals(instruction.getR2())) {
 							if (!regFile[j].getQi().equals("0")) {
+								System.out.println(regFile[j].getQi() + " heeeeeeeeeeeeeeeeere");
 								reservationStation.get(i).setQj(regFile[j].getQi());
 							} else {
 								reservationStation.get(i).setVj(regFile[j].getValue());
@@ -71,6 +69,11 @@ public class AddSubRS {
 								reservationStation.get(i).setQk("0");
 							}
 						}
+
+						if (regFile[j].getRegName().equals(instruction.getR1())) {
+							regFile[j].setQi(reservationStation.get(i).getTag());
+						}
+						
 					} else {
 
 						if (regFile[j].getRegName().equals(instruction.getR1())) {
@@ -84,15 +87,20 @@ public class AddSubRS {
 						}
 					}
 				}
+				reservationStation.get(i).setBusy(true);
+				reservationStation.get(i).setOperation(instruction.operation);
+				reservationStation.get(i).setResult(0);
+				reservationStation.get(i).setEntryCycle(cycleCount);
+				// ReservationStationEntry entry = new
+				// ReservationStationEntry(reservationStation.get(i).getTag(), true,
+				// reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
+				// reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
+				// reservationStation.get(i).getQk(), reservationStation.get(i).getResult(),
+				// reservationStation.get(i).getBranchAddress());
 
-				ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
-						reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
-						reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
-						reservationStation.get(i).getQk(), reservationStation.get(i).getResult(), reservationStation.get(i).getBranchAddress());
+				// entry.setEntryCycle(cycleCount);
 
-				entry.setEntryCycle(cycleCount);
-
-				reservationStation.add(i, entry);
+				// reservationStation.add(i, entry);
 
 				break;
 				// check place in Vj/Vk or Qj/Qk?
@@ -114,7 +122,11 @@ public class AddSubRS {
 		while (iterator.hasNext()) {
 			ReservationStationEntry entry = iterator.next();
 			if (entry.getTag().equals(targetTag)) {
-				iterator.remove();
+				entry.setBusy(false);
+				entry.setOperation(" ");
+				entry.setVj(0);
+				entry.setVk(0);
+				entry.setResult(0);
 			}
 		}
 	}

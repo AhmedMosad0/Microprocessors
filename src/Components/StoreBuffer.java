@@ -59,7 +59,9 @@ public class StoreBuffer {
 
         for (int i = 0; i < buffer.length; i++) {
             if (buffer[i].address == (address)) {
-                buffer[i] = null;
+                buffer[i].address = 0;
+                buffer[i].Q = "0";
+                buffer[i].V = 0;
                 buffer[i].busy = false;
             }
         }

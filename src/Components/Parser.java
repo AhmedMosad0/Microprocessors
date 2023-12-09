@@ -32,63 +32,63 @@ public class Parser {
                 switch (line[0]) {
                     case "LD":
                         operation = "LD";
-                        r1 = line[1].substring(1);
-                        address = Integer.parseInt(line[2].substring(1));
+                        r1 = line[1];
+                        address = Integer.parseInt(line[2]);
                         break;
                     case "SD":
                         operation = "SD";
-                        r1 = line[1].substring(1);
-                        address = Integer.parseInt(line[2].substring(1));
+                        r1 = line[1];
+                        address = Integer.parseInt(line[2]);
                         break;
                     case "ADD":
                         operation = "ADD";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        r3 = line[3].substring(1);
+                        r1 = line[1];
+                        r2 = line[2];
+                        r3 = line[3];
                         break;
                     case "SUB":
                         operation = "SUB";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        r3 = line[3].substring(1);
+                        r1 = line[1];
+                        r2 = line[2];
+                        r3 = line[3];
                         break;
                     case "MUL":
                         operation = "MUL";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        r3 = line[3].substring(1);
+                        r1 = line[1];
+                        r2 = line[2];
+                        r3 = line[3];
                         break;
                     case "DIV":
                         operation = "DIV";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        r3 = line[3].substring(1);
+                        r1 = line[1];
+                        r2 = line[2];
+                        r3 = line[3];
                         break;
                     case "ADDI":
                         operation = "ADDI";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        immediate = Float.parseFloat(line[3].substring(1));
+                        r1 = line[1];
+                        r2 = line[2];
+                        immediate = Float.parseFloat(line[3]);
                         break;
 
                     case "SUBI":
                         operation = "SUBI";
 
-                        r1 = line[1].substring(1);
-                        r2 = line[2].substring(1);
-                        immediate = Float.parseFloat(line[3].substring(1));
+                        r1 = line[1];
+                        r2 = line[2];
+                        immediate = Float.parseFloat(line[3]);
                         break;
 
                     case "BNEZ":
                         operation = "BNEZ";
 
-                        r1 = line[1].substring(1);
-                        branchLocation = Integer.parseInt(line[2].substring(1));
+                        r1 = line[1];
+                        branchLocation = Integer.parseInt(line[2]);
                         break;
 
                     default:

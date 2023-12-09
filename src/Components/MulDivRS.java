@@ -12,8 +12,9 @@ public class MulDivRS {
 	LinkedList<ReservationStationEntry> reservationStation = new LinkedList<>();
 	int size;
 
-	public MulDivRS(LinkedList<ReservationStationEntry> reservationStation) {
+	public MulDivRS(LinkedList<ReservationStationEntry> reservationStation , int size) {
 		this.reservationStation = reservationStation;
+		this.size = size;
 	}
 	
 	void initializeMulDivRS() {
@@ -63,14 +64,19 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 					}
 				}
 
-				ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
-						reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
-						reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
-						reservationStation.get(i).getQk(), reservationStation.get(i).getResult() , 0);
+				reservationStation.get(i).setBusy(true);
+				reservationStation.get(i).setOperation(instruction.operation);
+				reservationStation.get(i).setResult(0);
+				reservationStation.get(i).setEntryCycle(cycleCount);
 
-				entry.setEntryCycle(cycleCount);
+				// ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
+				// 		reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
+				// 		reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
+				// 		reservationStation.get(i).getQk(), reservationStation.get(i).getResult() , 0);
+
+				// entry.setEntryCycle(cycleCount);
 				
-				reservationStation.add(i, entry);
+				// reservationStation.add(i, entry);
 
 				// check place in Vj/Vk or Qj/Qk?
 				// check fl reg file r1 el qi bta3to 0 wala la, law msh zero get the string w
@@ -94,7 +100,11 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 	    while (iterator.hasNext()) {
 	        ReservationStationEntry entry = iterator.next();
 	        if (entry.getTag().equals(targetTag)) {
-	            iterator.remove();
+				entry.setBusy(false);
+				entry.setOperation(" ");
+				entry.setVj(0);
+				entry.setVk(0);
+				entry.setResult(0);
 	        }
 	    }
 	}

@@ -1,6 +1,7 @@
 package Components;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 import Helpers.CacheEntry;
@@ -32,8 +33,8 @@ public class Simulation {
 
     public Simulation(AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
             StoreBuffer storeBuffer,
-            RegFile regFile, Cache cache, Scanner sc, int addLatency, int subLatency, int divLatency, int mulLatency,
-            int LoadLatency, int storeLatency, ArrayList<IssuingEntry> queue) throws Exception {
+            RegFile regFile, Cache cache, int addLatency, int subLatency, int divLatency, int mulLatency,
+            int loadLatency, int storeLatency, ArrayList<IssuingEntry> queue) throws Exception {
         Parser p = new Parser();
         this.instructions = p.parse("instructions.txt");
         this.addSubRS = addSubRS;
@@ -42,36 +43,42 @@ public class Simulation {
         this.storeBuffer = storeBuffer;
         this.regFile = regFile;
         this.cache = cache;
-        this.sc = sc;
-        this.addLatency = Integer.parseInt(sc.nextLine());
-        this.subLatency = Integer.parseInt(sc.nextLine());
-        this.divLatency = Integer.parseInt(sc.nextLine());
-        this.mulLatency = Integer.parseInt(sc.nextLine());
-        this.loadLatency = Integer.parseInt(sc.nextLine());
-        this.storeLatency = Integer.parseInt(sc.nextLine());
+        this.addLatency = addLatency;
+        this.subLatency = subLatency;
+        this.divLatency = divLatency;
+        this.mulLatency = mulLatency;
+        this.loadLatency = loadLatency;
+        this.storeLatency = storeLatency;
         this.queue = queue;
     }
 
     public void runSimulation() throws Exception {
-        for (int i = 0; !instructions.isEmpty(); i++) {
+        issue();
+        boolean first = true;
+        instructionPointer++;
+
+        while (!queue.isEmpty()) {
             // executeCycle(); //logic of execution of one cycle
-            // cycleCount++;
-            printCycle(cycleCount);///////////////// do toString method to all RS
+            // cycleCount++
 
             boolean issued = false;
 
-            if (!branchStall) {
+            if (!branchStall && !first && instructionPointer < instructions.size()) {
                 issued = issue();
             }
 
             updateStations();
             executeCycle();
-
-            cycleCount++;
+            updateStations();
 
             if (issued) {
                 instructionPointer++;
             }
+
+            printCycle(cycleCount);
+
+            cycleCount++;
+            first = false;
 
         }
 
@@ -142,6 +149,19 @@ public class Simulation {
                     return false;
                 }
 
+            case "SUBI":
+            case "ADDI":
+                if (!addSubRS.isStationFull()) {
+                    IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
+                    addSubRS.addNewEntry(currentInstruction, cycleCount);
+                    entry.setIssueCycle(cycleCount);
+                    queue.add(entry);
+                    return true;
+                } else {
+                    System.out.println("Add/Sub RS is full");
+                    return false;
+                }
+
             case "MUL":
                 if (!mulDivRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
@@ -187,77 +207,83 @@ public class Simulation {
             Instruction current = queue.get(i).getInstruction();
 
             for (int j = 0; j < addSubRS.getSize(); j++) {
-                if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
-                    ReservationStationEntry addS = addSubRS.reservationStation.get(j);
-                    if (!addS.getQj().equals("0")) {
-                        for (int k = 0; k < regFile.registerFile.length; k++) {
-                            if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
-                                addS.setQj(regFile.registerFile[k].getQi());
-                                if (addS.getQj().equals("0")) {
-                                    addS.setVj(regFile.registerFile[k].getValue());
+                if (addSubRS.reservationStation.get(j).isBusy() == true) {
+                    if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
+                        ReservationStationEntry addS = addSubRS.reservationStation.get(j);
+                        if (!addS.getQj().equals("0")) {
+                            for (int k = 0; k < regFile.registerFile.length; k++) {
+                                if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
+                                    addS.setQj(regFile.registerFile[k].getQi());
+                                    if (addS.getQj().equals("0")) {
+                                        addS.setVj(regFile.registerFile[k].getValue());
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
-                    }
-                    if (!addS.getQk().equals("0")) {
-                        for (int k = 0; k < regFile.registerFile.length; k++) {
-                            if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
-                                addS.setQk(regFile.registerFile[k].getQi());
-                                if (addS.getQk().equals("0")) {
-                                    addS.setVk(regFile.registerFile[k].getValue());
+                        if (!addS.getQk().equals("0")) {
+                            for (int k = 0; k < regFile.registerFile.length; k++) {
+                                if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
+                                    addS.setQk(regFile.registerFile[k].getQi());
+                                    if (addS.getQk().equals("0")) {
+                                        addS.setVk(regFile.registerFile[k].getValue());
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
+                        break;
                     }
-                    break;
                 }
             }
 
             for (int j = 0; j < mulDivRS.reservationStation.size(); j++) {
-                if (mulDivRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
-                    ReservationStationEntry mulS = mulDivRS.reservationStation.get(j);
-                    if (!mulS.getQj().equals("0")) {
-                        for (int k = 0; k < regFile.registerFile.length; k++) {
-                            if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
-                                mulS.setQj(regFile.registerFile[k].getQi());
-                                if (mulS.getQj().equals("0")) {
-                                    mulS.setVj(regFile.registerFile[k].getValue());
+                if (mulDivRS.reservationStation.get(j).isBusy() == true) {
+                    if (mulDivRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
+                        ReservationStationEntry mulS = mulDivRS.reservationStation.get(j);
+                        if (!mulS.getQj().equals("0")) {
+                            for (int k = 0; k < regFile.registerFile.length; k++) {
+                                if (current.getR2().equals(regFile.registerFile[k].getRegName())) {
+                                    mulS.setQj(regFile.registerFile[k].getQi());
+                                    if (mulS.getQj().equals("0")) {
+                                        mulS.setVj(regFile.registerFile[k].getValue());
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
-                    }
-                    if (!mulS.getQk().equals("0")) {
-                        for (int k = 0; k < regFile.registerFile.length; k++) {
-                            if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
-                                mulS.setQk(regFile.registerFile[k].getQi());
-                                if (mulS.getQk().equals("0")) {
-                                    mulS.setVk(regFile.registerFile[k].getValue());
+                        if (!mulS.getQk().equals("0")) {
+                            for (int k = 0; k < regFile.registerFile.length; k++) {
+                                if (current.getR3().equals(regFile.registerFile[k].getRegName())) {
+                                    mulS.setQk(regFile.registerFile[k].getQi());
+                                    if (mulS.getQk().equals("0")) {
+                                        mulS.setVk(regFile.registerFile[k].getValue());
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
+                        break;
                     }
-                    break;
                 }
             }
 
             for (int j = 0; j < storeBuffer.buffer.length; j++) {
-                LSEntry entry = storeBuffer.buffer[j];
-                if (current.address == entry.getAddress()) {
-                    if (!entry.getQ().equals("0")) {
-                        for (int k = 0; k < regFile.registerFile.length; k++) {
-                            if (current.getR1().equals(regFile.registerFile[k].getRegName())) {
-                                entry.setQ(regFile.registerFile[k].getQi());
-                                if (entry.getQ().equals("0")) {
-                                    entry.setV(regFile.registerFile[k].getValue());
+                if (storeBuffer.buffer[j].isBusy() == true) {
+                    LSEntry entry = storeBuffer.buffer[j];
+                    if (current.address == entry.getAddress()) {
+                        if (!entry.getQ().equals("0")) {
+                            for (int k = 0; k < regFile.registerFile.length; k++) {
+                                if (current.getR1().equals(regFile.registerFile[k].getRegName())) {
+                                    entry.setQ(regFile.registerFile[k].getQi());
+                                    if (entry.getQ().equals("0")) {
+                                        entry.setV(regFile.registerFile[k].getValue());
+                                    }
+                                    break;
                                 }
-                                break;
                             }
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -289,11 +315,11 @@ public class Simulation {
                                     regFile.writeResultToRegFile(currentInstruction.getR1(), current.getResult());
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
-
-                                    if ((queue.get(i).getStartExecution() + addLatency == cycleCount)) {
+                                    if ((queue.get(i).getStartExecution() + addLatency - 1 == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
                                         queue.get(i).setState(InstructionState.Writing);
                                     }
@@ -302,7 +328,13 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    if ((queue.get(i).getStartExecution() + addLatency - 1 == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    } else
+                                        queue.get(i).setState(InstructionState.Executing);
+
                                 }
 
                                 break;
@@ -324,11 +356,12 @@ public class Simulation {
                                     regFile.writeResultToRegFile(currentInstruction.getR1(), current.getResult());
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-                                    if ((queue.get(i).getStartExecution() + subLatency == cycleCount)) {
+                                    if ((queue.get(i).getStartExecution() + subLatency - 1 == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
                                         queue.get(i).setState(InstructionState.Writing);
                                     }
@@ -337,7 +370,13 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    if ((queue.get(i).getStartExecution() + subLatency - 1 == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    } else
+                                        queue.get(i).setState(InstructionState.Executing);
+
                                 }
 
                                 break;
@@ -359,11 +398,12 @@ public class Simulation {
                                     regFile.writeResultToRegFile(currentInstruction.getR1(), current.getResult());
                                     mulDivRS.delMulDivEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-                                    if ((queue.get(i).getStartExecution() + mulLatency == cycleCount)) {
+                                    if ((queue.get(i).getStartExecution() + mulLatency - 1 == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
                                         queue.get(i).setState(InstructionState.Writing);
                                     }
@@ -372,7 +412,13 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    if ((queue.get(i).getStartExecution() + mulLatency - 1 == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    } else
+                                        queue.get(i).setState(InstructionState.Executing);
+
                                 }
 
                                 break;
@@ -394,11 +440,12 @@ public class Simulation {
                                     regFile.writeResultToRegFile(currentInstruction.getR1(), current.getResult());
                                     mulDivRS.delMulDivEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-                                    if ((queue.get(i).getStartExecution() + divLatency == cycleCount)) {
+                                    if ((queue.get(i).getStartExecution() + divLatency - 1 == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
                                         queue.get(i).setState(InstructionState.Writing);
                                     }
@@ -407,7 +454,13 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    if ((queue.get(i).getStartExecution() + divLatency - 1 == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    } else
+                                        queue.get(i).setState(InstructionState.Executing);
+
                                 }
 
                                 break;
@@ -420,32 +473,39 @@ public class Simulation {
                 case "ADDI":
                 case "SUBI":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
+                        if(cycleCount <= 10){
+                        System.out.println("\n1111\n");
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
+                            System.out.println("\n2222\n");
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
 
-                            if (current.getQj().equals("0") && current.getQk().equals("0")) {
+                            System.out.println("Qj: " +current.getQj() + " Qk: " + current.getQk());
 
+                            if (current.getQj().equals("0")) {
+                                System.out.println("\n3333 dakhlt wel Q = 0\n");
+
+                                System.out.println(write);
                                 if (queue.get(i).getState().equals(InstructionState.Writing) && !write) {
+                                    System.out.println("\n 4444 dakhalt w ana writing\n");
                                     write = true;
                                     regFile.writeResultToRegFile(currentInstruction.getR1(), current.getResult());
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
-                                }
-
-                                else if (queue.get(i).getState().equals(InstructionState.Executing)) {
-                                    current.setResult(alu(currentInstruction));
-                                    queue.get(i).setState(InstructionState.Writing);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
-                                    queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+                                    System.out.println("\n 5555 dakhalt w ana ha execute " + currentInstruction.operation + "\n");
+
+                                    current.setResult(alu(currentInstruction));
+                                    queue.get(i).setState(InstructionState.Writing);
                                 }
 
                                 break;
                             }
                         }
+                    }
                     }
 
                     break;
@@ -459,12 +519,13 @@ public class Simulation {
 
                                 if (queue.get(i).getState().equals(InstructionState.Writing)) {
                                     if (current.getResult() == 1) {
-                                        current.setBranchAddress(1);
+                                        current.setBranchAddress(0);
                                         instructionPointer = current.getBranchAddress();
                                     }
                                     branchStall = false;
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
@@ -496,11 +557,12 @@ public class Simulation {
                                     cache.entry(new CacheEntry(currentInstruction.address, storeBuffer.buffer[j].V));
                                     storeBuffer.removeEntry(currentInstruction.address);
                                     queue.get(i).setState(InstructionState.Finished);
+                                    queue.remove(i);
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-                                    if ((queue.get(i).getStartExecution() + storeLatency == cycleCount)) {
+                                    if ((queue.get(i).getStartExecution() + storeLatency - 1 == cycleCount)) {
                                         queue.get(i).setState(InstructionState.Writing);
                                     }
                                 }
@@ -508,7 +570,13 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    if ((queue.get(i).getStartExecution() + storeLatency - 1 == cycleCount)) {
+
+                                        queue.get(i).setState(InstructionState.Writing);
+                                    } else
+                                        queue.get(i).setState(InstructionState.Executing);
+
                                 }
                                 break;
                             }
@@ -531,11 +599,12 @@ public class Simulation {
                                 regFile.writeResultToRegFile(currentInstruction.r1, value);
                                 loadBuffer.removeEntry(loadBuffer.buffer[j].getTag());
                                 queue.get(i).setState(InstructionState.Finished);
+                                queue.remove(i);
                             }
 
                             else if (queue.get(i).getState().equals(InstructionState.Executing)) {
 
-                                if ((queue.get(i).getStartExecution() + loadLatency == cycleCount)) {
+                                if ((queue.get(i).getStartExecution() + loadLatency - 1 == cycleCount)) {
 
                                     queue.get(i).setState(InstructionState.Writing);
                                 }
@@ -544,7 +613,13 @@ public class Simulation {
                             else if (queue.get(i).getState().equals(InstructionState.Issued)
                                     && queue.get(i).getIssueCycle() < cycleCount) {
                                 queue.get(i).setStartExecution(cycleCount);
-                                queue.get(i).setState(InstructionState.Executing);
+
+                                if ((queue.get(i).getStartExecution() + loadLatency - 1 == cycleCount)) {
+
+                                    queue.get(i).setState(InstructionState.Writing);
+                                } else
+                                    queue.get(i).setState(InstructionState.Executing);
+
                             }
 
                             break;
@@ -611,7 +686,9 @@ public class Simulation {
         }
 
         else if (operation.equals("SUBI")) {
+            System.out.println("DAKHALT EL ALUUUUUU");
             result = r2Value - immediate;
+            System.out.println("\n" + result + "\n");
         }
 
         else if (operation.equals("BNEZ")) {
@@ -625,15 +702,44 @@ public class Simulation {
     }
 
     public void printCycle(int cycle) {
+        if(cycleCount <= 10){
         System.out.println(cycle + "\n////////////////////////");
-        addSubRS.toString();
-        mulDivRS.toString();
-        loadBuffer.toString();
-        storeBuffer.toString();
-        regFile.toString();
+        System.out.println(addSubRS.toString());
+        System.out.println(mulDivRS.toString());
+        System.out.println(loadBuffer.toString());
+        System.out.println(storeBuffer.toString());
+        System.out.println(regFile.toString());
+        System.out.println(cache.toString());
+        }
     }
 
     public static void main(String[] args) throws Exception {
+        LinkedList<ReservationStationEntry> addSubReservationStation = new LinkedList<>();
+        LinkedList<ReservationStationEntry> mulDivReservationStation = new LinkedList<>();
+        ArrayList<CacheEntry> cacheEntries = new ArrayList<>();
+        ArrayList<IssuingEntry> queue = new ArrayList<>();
+
+        AddSubRS addSubRS = new AddSubRS(addSubReservationStation, 3);
+        MulDivRS mulDivRS = new MulDivRS(mulDivReservationStation, 3);
+        StoreBuffer storeBuffer = StoreBuffer.getInstance(3);
+        LoadBuffer loadBuffer = LoadBuffer.getInstance(3);
+        Cache cache = new Cache(cacheEntries);
+        RegFile regFile = new RegFile();
+
+        addSubRS.initializeAddSubRS();
+        mulDivRS.initializeMulDivRS();
+        regFile.initializeRegFile();
+        cache.initializeCache();
+
+        regFile.loadIntoRegFile("R2", 5);
+        // regFile.loadIntoRegFile("R1", 10);
+        regFile.loadIntoRegFile("R3", 10);
+        cache.preLoadValue(2, 10);
+
+        Simulation simulation = new Simulation(addSubRS, loadBuffer, mulDivRS, storeBuffer, regFile, cache, 2, 2, 4, 4,
+                1, 1, queue);
+
+        simulation.runSimulation();
     }
 
 }

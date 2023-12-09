@@ -3,6 +3,7 @@ package Components;
 import java.util.ArrayList;
 
 import Helpers.CacheEntry;
+import Helpers.RegFileEntry;
 
 public class Cache {
 
@@ -13,28 +14,22 @@ public class Cache {
         this.cache = cache;
     }
 
-    public boolean entry(CacheEntry entry) {
+    public void initializeCache() {
+        for (int i = 0; i < 64; i++) {
+            CacheEntry entry = new CacheEntry(i);
+            cache.add(entry);
+        }
+    }
 
-        boolean contains = false;
-        boolean enterdFlag = false;
+    public void entry(CacheEntry entry) {
 
-        if (cache.size() < size) {
             for (int i = 0; i < cache.size(); i++) {
                 if (cache.get(i).getAddress() == entry.getAddress()) {
                     cache.get(i).setValue(entry.getValue());
-                    contains = true;
                     break;
                 }
             }
-            if (!contains) {
-                cache.add(entry);
-            }
-            enterdFlag = true;
-        } else {
-            enterdFlag = false;
-            System.out.println("Cache is full!!");
-        }
-        return enterdFlag;
+
     }
 
     public float getAddressValue(int address) throws Exception {
@@ -49,11 +44,18 @@ public class Cache {
 
     }
 
+    public void preLoadValue(int address, float value) {
+        for (int i = 0; i < cache.size(); i++) {
+            if (cache.get(i).getAddress() == address)
+                cache.get(i).setValue(value);
+        }
+    }
+
     public String toString() {
 
         String str = "Cache\n";
 
-        for (int i = 0; i < cache.size(); i++) {
+        for (int i = 2; i < 4; i++) {
             str += "-------------------------\n" +
                     "Address: " + cache.get(i).getAddress() +
                     "\nValue: " + cache.get(i).getValue() +
