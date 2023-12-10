@@ -63,7 +63,9 @@ public class Simulation {
 
             boolean issued = false;
 
+
             if (!branchStall && !first && instructionPointer < instructions.size()) {
+
                 issued = issue();
             }
 
@@ -85,7 +87,9 @@ public class Simulation {
     }
 
     public boolean issue() {
+        System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
         Instruction currentInstruction = instructions.get(instructionPointer);
+
         switch (currentInstruction.operation) {
             case "SD":
 
@@ -302,7 +306,10 @@ public class Simulation {
 
             // check reservation station of operation
             // handle issuing
+             System.out.println(currentInstruction.operation);
+
             switch (currentInstruction.operation) {
+
                 case "ADD":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
@@ -473,8 +480,8 @@ public class Simulation {
                 case "ADDI":
                 case "SUBI":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
-                        if(cycleCount <= 10){
                         System.out.println("\n1111\n");
+                        System.out.println(addSubRS.reservationStation.get(j).getEntryCycle());
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             System.out.println("\n2222\n");
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
@@ -492,6 +499,7 @@ public class Simulation {
                                     addSubRS.delAddSubEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
                                     queue.remove(i);
+
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
@@ -505,7 +513,7 @@ public class Simulation {
                                 break;
                             }
                         }
-                    }
+                    
                     }
 
                     break;
@@ -702,7 +710,7 @@ public class Simulation {
     }
 
     public void printCycle(int cycle) {
-        if(cycleCount <= 10){
+     
         System.out.println(cycle + "\n////////////////////////");
         System.out.println(addSubRS.toString());
         System.out.println(mulDivRS.toString());
@@ -710,7 +718,7 @@ public class Simulation {
         System.out.println(storeBuffer.toString());
         System.out.println(regFile.toString());
         System.out.println(cache.toString());
-        }
+        
     }
 
     public static void main(String[] args) throws Exception {
