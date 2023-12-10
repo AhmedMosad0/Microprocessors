@@ -30,6 +30,7 @@ public class Simulation {
     int instructionPointer = 0;
     ArrayList<IssuingEntry> queue;
     boolean branchStall = false;
+    boolean branchTaken = false;
 
     public Simulation(AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
             StoreBuffer storeBuffer,
@@ -53,6 +54,7 @@ public class Simulation {
     }
 
     public void runSimulation() throws Exception {
+
         issue();
         boolean first = true;
         instructionPointer++;
@@ -348,7 +350,7 @@ public class Simulation {
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
 
-                                    System.out.println("Start Executing in cycle  " +  queue.get(i).getStartExecution());
+                                    System.out.println("Start Executing in cycle  " + queue.get(i).getStartExecution());
 
                                     if ((queue.get(i).getStartExecution() + addLatency - 1 == cycleCount)) {
 
@@ -534,18 +536,25 @@ public class Simulation {
 
                             if (current.getQj().equals("0") && current.getQk().equals("0")) {
 
-                                if (queue.get(i).getState().equals(InstructionState.Writing)) {
-                                    if (current.getResult() == 1) {
-                                        current.setBranchAddress(0);
-                                        instructionPointer = current.getBranchAddress();
-                                        System.out.println("\nBRANCH TAKENNNNNNNNNNN");
-                                    }
-                                    branchStall = false;
-                                    System.out.println("\nBRANCH NOT TAKENNNNNNNNNNN");
-                                    addSubRS.delAddSubEntry(current.getTag());
-                                    queue.get(i).setState(InstructionState.Finished);
+                                if (queue.get(i).getState().equals(InstructionState.Finished) && branchTaken) {
                                     queue.remove(i);
                                     i--;
+                                }
+
+                                else if (queue.get(i).getState().equals(InstructionState.Writing)) {
+                                    System.out.println(current.getResult() + " REASULTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                                    if (current.getResult() == 1) {
+                                        instructionPointer = 0;
+                                        System.out.println("\nBRANCH TAKENNNNNNNNNNN");
+                                        branchTaken = true;
+                                    }
+                                    branchStall = false;
+                                    addSubRS.delAddSubEntry(current.getTag());
+                                    queue.get(i).setState(InstructionState.Finished);
+                                    if (!branchTaken) {
+                                        queue.remove(i);
+                                        i--;
+                                    }
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
@@ -713,9 +722,9 @@ public class Simulation {
 
         else if (operation.equals("BNEZ")) {
             if (r1Value == 0)
-                result = 1;
-            else
                 result = -1;
+            else
+                result = 1;
         }
 
         return result;

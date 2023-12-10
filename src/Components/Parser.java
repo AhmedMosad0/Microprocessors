@@ -28,7 +28,6 @@ public class Parser {
                 int address = -1;
                 float immediate = -1;
                 String operation = "";
-                int branchLocation = -1;
                 switch (line[0]) {
                     case "LD":
                         operation = "LD";
@@ -88,7 +87,6 @@ public class Parser {
                         operation = "BNEZ";
 
                         r1 = line[1];
-                        branchLocation = Integer.parseInt(line[2]);
                         break;
 
                     default:
@@ -99,7 +97,6 @@ public class Parser {
                 instruction.r2 = r2;
                 instruction.r3 = r3;
                 instruction.address = address;
-                instruction.branchLocation = branchLocation;
                 instruction.immediate = immediate;
                 instruction.operation = operation;
                 instructions.add(instruction);

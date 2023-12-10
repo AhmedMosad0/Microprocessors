@@ -83,7 +83,6 @@ public class AddSubRS {
 								reservationStation.get(i).setVj(regFile[j].getValue());
 								reservationStation.get(i).setQj("0");
 							}
-							reservationStation.get(i).setBranchAddress(instruction.getBranchLocation());
 						}
 					}
 				}
