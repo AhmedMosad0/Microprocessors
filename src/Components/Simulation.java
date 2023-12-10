@@ -736,7 +736,6 @@ public class Simulation {
     }
 
     public void printCycle(int cycle) {
-        if(cycleCount <= 20){
             System.out.println("Cycle: " + cycle + "\n////////////////////////");
             System.out.println(addSubRS.toString());
             System.out.println(mulDivRS.toString());
@@ -744,7 +743,6 @@ public class Simulation {
             System.out.println(storeBuffer.toString());
             System.out.println(regFile.toString());
             System.out.println(cache.toString());
-        }
         
     }
 
