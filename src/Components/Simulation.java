@@ -31,6 +31,9 @@ public class Simulation {
     ArrayList<IssuingEntry> queue;
     boolean branchStall = false;
     boolean branchTaken = false;
+    boolean extraIssue = false;
+
+
 
     public Simulation(AddSubRS addSubRS, LoadBuffer loadBuffer, MulDivRS mulDivRS,
             StoreBuffer storeBuffer,
@@ -59,10 +62,10 @@ public class Simulation {
         boolean first = true;
         instructionPointer++;
 
-        while (!queue.isEmpty()) {
+        while (!queue.isEmpty() || extraIssue || instructionPointer < instructions.size()) {
             // executeCycle(); //logic of execution of one cycle
             // cycleCount++
-
+            extraIssue = false;
             boolean issued = false;
 
             if (!branchStall && !first && instructionPointer < instructions.size()) {
@@ -125,7 +128,7 @@ public class Simulation {
                         return false;
                     }
                 } else {
-                    System.out.println("Store Buffer is full");
+                    System.out.println("Load Buffer is full");
                     return false;
                 }
 
@@ -336,10 +339,6 @@ public class Simulation {
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
-                                    if (cycleCount <= 13) {
-                                        System.out.println("DAKHALT F CYCLE " + cycleCount);
-                                        System.out.println("\n" + (queue.get(i).getStartExecution() + addLatency - 1));
-                                    }
                                     if ((queue.get(i).getStartExecution() + addLatency - 1 == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
                                         queue.get(i).setState(InstructionState.Writing);
@@ -349,8 +348,6 @@ public class Simulation {
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-
-                                    System.out.println("Start Executing in cycle  " + queue.get(i).getStartExecution());
 
                                     if ((queue.get(i).getStartExecution() + addLatency - 1 == cycleCount)) {
 
@@ -536,16 +533,21 @@ public class Simulation {
 
                             if (current.getQj().equals("0") && current.getQk().equals("0")) {
 
-                                if (queue.get(i).getState().equals(InstructionState.Finished) && branchTaken) {
+                                if (queue.get(i).getState().equals(InstructionState.Finished)) {
                                     queue.remove(i);
                                     i--;
+                                    branchTaken = false;
                                 }
 
-                                else if (queue.get(i).getState().equals(InstructionState.Writing)) {
-                                    System.out.println(current.getResult() + " REASULTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                                else if (queue.get(i).getState().equals(InstructionState.Writing) && !write) {
+                                    if (cycleCount < 18) {
+                                        System.out.println(current.getResult() + " REASULTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                                    }
                                     if (current.getResult() == 1) {
                                         instructionPointer = 0;
-                                        System.out.println("\nBRANCH TAKENNNNNNNNNNN");
+                                        if (cycleCount < 18) {
+                                            System.out.println("\nBRANCH TAKENNNNNNNNNNN");
+                                        }
                                         branchTaken = true;
                                     }
                                     branchStall = false;
@@ -554,18 +556,23 @@ public class Simulation {
                                     if (!branchTaken) {
                                         queue.remove(i);
                                         i--;
+                                        if(instructionPointer < instructions.size()){
+                                            extraIssue = true;
+                                        }
                                     }
                                 }
 
-                                else if (queue.get(i).getState().equals(InstructionState.Executing)) {
-                                    current.setResult(alu(currentInstruction));
-                                    queue.get(i).setState(InstructionState.Writing);
-                                }
+                                // else if (queue.get(i).getState().equals(InstructionState.Executing)) {
+                                //     current.setResult(alu(currentInstruction));
+                                //     queue.get(i).setState(InstructionState.Writing);
+                                // }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Issued)
                                         && queue.get(i).getIssueCycle() < cycleCount) {
                                     queue.get(i).setStartExecution(cycleCount);
-                                    queue.get(i).setState(InstructionState.Executing);
+
+                                    current.setResult(alu(currentInstruction));
+                                    queue.get(i).setState(InstructionState.Writing);
                                 }
 
                                 break;
@@ -715,9 +722,7 @@ public class Simulation {
         }
 
         else if (operation.equals("SUBI")) {
-            System.out.println("DAKHALT EL ALUUUUUU");
             result = r2Value - immediate;
-            System.out.println("\n" + result + "\n");
         }
 
         else if (operation.equals("BNEZ")) {
@@ -731,13 +736,16 @@ public class Simulation {
     }
 
     public void printCycle(int cycle) {
-        System.out.println("Cycle: " + cycle + "\n////////////////////////");
-        System.out.println(addSubRS.toString());
-        System.out.println(mulDivRS.toString());
-        System.out.println(loadBuffer.toString());
-        System.out.println(storeBuffer.toString());
-        System.out.println(regFile.toString());
-        System.out.println(cache.toString());
+        if(cycleCount <= 20){
+            System.out.println("Cycle: " + cycle + "\n////////////////////////");
+            System.out.println(addSubRS.toString());
+            System.out.println(mulDivRS.toString());
+            System.out.println(loadBuffer.toString());
+            System.out.println(storeBuffer.toString());
+            System.out.println(regFile.toString());
+            System.out.println(cache.toString());
+        }
+        
     }
 
     public static void main(String[] args) throws Exception {
@@ -746,10 +754,10 @@ public class Simulation {
         ArrayList<CacheEntry> cacheEntries = new ArrayList<>();
         ArrayList<IssuingEntry> queue = new ArrayList<>();
 
-        AddSubRS addSubRS = new AddSubRS(addSubReservationStation, 3);
-        MulDivRS mulDivRS = new MulDivRS(mulDivReservationStation, 3);
-        StoreBuffer storeBuffer = StoreBuffer.getInstance(3);
-        LoadBuffer loadBuffer = LoadBuffer.getInstance(3);
+        AddSubRS addSubRS = new AddSubRS(addSubReservationStation, 1);
+        MulDivRS mulDivRS = new MulDivRS(mulDivReservationStation, 1);
+        StoreBuffer storeBuffer = StoreBuffer.getInstance(2);
+        LoadBuffer loadBuffer = LoadBuffer.getInstance(2);
         Cache cache = new Cache(cacheEntries);
         RegFile regFile = new RegFile();
 
@@ -761,11 +769,11 @@ public class Simulation {
         regFile.loadIntoRegFile("R2", 5);
         // regFile.loadIntoRegFile("R1", 10);
         regFile.loadIntoRegFile("R3", 10);
-        regFile.loadIntoRegFile("R4", 50);
+        regFile.loadIntoRegFile("R1", 50);
 
         cache.preLoadValue(2, 10);
 
-        Simulation simulation = new Simulation(addSubRS, loadBuffer, mulDivRS, storeBuffer, regFile, cache, 2, 2, 4, 4,
+        Simulation simulation = new Simulation(addSubRS, loadBuffer, mulDivRS, storeBuffer, regFile, cache, 2, 2, 2, 2,
                 1, 1, queue);
 
         simulation.runSimulation();

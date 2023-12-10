@@ -12,38 +12,35 @@ public class MulDivRS {
 	LinkedList<ReservationStationEntry> reservationStation = new LinkedList<>();
 	int size;
 
-	public MulDivRS(LinkedList<ReservationStationEntry> reservationStation , int size) {
+	public MulDivRS(LinkedList<ReservationStationEntry> reservationStation, int size) {
 		this.reservationStation = reservationStation;
 		this.size = size;
 	}
-	
+
 	void initializeMulDivRS() {
-		//reservationStation = new LinkedList<>();
-		for(int i=0; i< this.size; i++) {
-			String tag = "M"+i;
-			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0 , 0.0 , "0" , "0" , 0 , 0));
+		// reservationStation = new LinkedList<>();
+		for (int i = 0; i < this.size; i++) {
+			String tag = "M" + i;
+			reservationStation.add(new ReservationStationEntry(tag, false, "", 0.0, 0.0, "0", "0", 0, 0));
 		}
 	}
-	
-	//gets tag of 1st available RS slot 
+
+	// gets tag of 1st available RS slot
 	String getFirstAvailableTag() {
-		for(int i=0; i<reservationStation.size(); i++) {
-			if(!reservationStation.get(i).isBusy()) {
+		for (int i = 0; i < reservationStation.size(); i++) {
+			if (!reservationStation.get(i).isBusy()) {
 				return reservationStation.get(i).getTag();
 			}
 		}
 		return "";
 	}
-		
-public void addNewEntry(Instruction instruction , int cycleCount) {
+
+	public void addNewEntry(Instruction instruction, int cycleCount) {
 		RegFileEntry[] regFile = RegFile.getRegisterFile();
 
 		for (int i = 0; i < reservationStation.size(); i++) {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
-					if (regFile[j].getRegName().equals(instruction.getR1())) {
-						regFile[j].setQi(reservationStation.get(i).getTag());
-					}
 
 					if (regFile[j].getRegName().equals(instruction.getR2())) {
 						if (!regFile[j].getQi().equals("0")) {
@@ -62,6 +59,10 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 							reservationStation.get(i).setQk("0");
 						}
 					}
+					
+					if (regFile[j].getRegName().equals(instruction.getR1())) {
+						regFile[j].setQi(reservationStation.get(i).getTag());
+					}
 				}
 
 				reservationStation.get(i).setBusy(true);
@@ -69,13 +70,15 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 				reservationStation.get(i).setResult(0);
 				reservationStation.get(i).setEntryCycle(cycleCount);
 
-				// ReservationStationEntry entry = new ReservationStationEntry(reservationStation.get(i).getTag(), true,
-				// 		reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
-				// 		reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
-				// 		reservationStation.get(i).getQk(), reservationStation.get(i).getResult() , 0);
+				// ReservationStationEntry entry = new
+				// ReservationStationEntry(reservationStation.get(i).getTag(), true,
+				// reservationStation.get(i).getOperation(), reservationStation.get(i).getVj(),
+				// reservationStation.get(i).getVk(), reservationStation.get(i).getQj(),
+				// reservationStation.get(i).getQk(), reservationStation.get(i).getResult() ,
+				// 0);
 
 				// entry.setEntryCycle(cycleCount);
-				
+
 				// reservationStation.add(i, entry);
 
 				// check place in Vj/Vk or Qj/Qk?
@@ -90,23 +93,25 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 		}
 	}
 
-	
 	public boolean isStationFull() {
-		return reservationStation.isEmpty();
+		if (getFirstAvailableTag().equals(""))
+			return true;
+
+		return false;
 	}
-	
+
 	public void delMulDivEntry(String targetTag) {
-	    Iterator<ReservationStationEntry> iterator = reservationStation.iterator();
-	    while (iterator.hasNext()) {
-	        ReservationStationEntry entry = iterator.next();
-	        if (entry.getTag().equals(targetTag)) {
+		Iterator<ReservationStationEntry> iterator = reservationStation.iterator();
+		while (iterator.hasNext()) {
+			ReservationStationEntry entry = iterator.next();
+			if (entry.getTag().equals(targetTag)) {
 				entry.setBusy(false);
 				entry.setOperation(" ");
 				entry.setVj(0);
 				entry.setVk(0);
 				entry.setResult(0);
-	        }
-	    }
+			}
+		}
 	}
 
 	public String toString() {
@@ -127,7 +132,4 @@ public void addNewEntry(Instruction instruction , int cycleCount) {
 		return str;
 	}
 
-	
-	
-	
 }

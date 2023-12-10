@@ -113,7 +113,10 @@ public class AddSubRS {
 	}
 
 	public boolean isStationFull() {
-		return reservationStation.isEmpty();
+		if(getFirstAvailableTag().equals(""))
+			return true;
+		
+		return false;
 	}
 
 	public void delAddSubEntry(String targetTag) {
