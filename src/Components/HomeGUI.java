@@ -75,7 +75,7 @@ public class HomeGUI extends JFrame {
                 String content = programInstructions.getText();
 
                 // Write the content to a file
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter("src//instructions.txt"))) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("instructions.txt"))) {
                     writer.write(content);
                     writer.close();
 
@@ -86,6 +86,7 @@ public class HomeGUI extends JFrame {
                     int loadLatency = Integer.parseInt(textBox5.getText());
                     int storeLatency = Integer.parseInt(textBox6.getText());
                     int addSize = Integer.parseInt(textBox7.getText());
+                    
                     int mulSize = Integer.parseInt(textBox8.getText());
                     int loadSize = Integer.parseInt(textBox9.getText());
                     int storeSize = Integer.parseInt(textBox10.getText());
@@ -109,7 +110,7 @@ public class HomeGUI extends JFrame {
 
                     regFile.loadIntoRegFile("R2", 5);
                     // regFile.loadIntoRegFile("R1", 10);
-                    regFile.loadIntoRegFile("R3", 10);
+                    regFile.loadIntoRegFile("R10", 10);
                     regFile.loadIntoRegFile("R1", 50);
 
                     cache.preLoadValue(2, 10);

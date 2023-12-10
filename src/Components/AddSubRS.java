@@ -48,12 +48,11 @@ public class AddSubRS {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
 
-					if (instruction.operation.equals("ADD") ||instruction.operation.equals("ADD.D")|| instruction.operation.equals("SUB.D")||instruction.operation.equals("SUB")
+					if (instruction.operation.equals("ADD") ||instruction.operation.equals("ADD.D")||instruction.operation.equals("DADD")|| instruction.operation.equals("SUB.D")||instruction.operation.equals("SUB")||instruction.operation.equals("DSUB")
 							|| instruction.operation.equals("SUBI") || instruction.operation.equals("ADDI")) {
 
 						if (regFile[j].getRegName().equals(instruction.getR2())) {
 							if (!regFile[j].getQi().equals("0")) {
-								System.out.println(regFile[j].getQi() + " heeeeeeeeeeeeeeeeere");
 								reservationStation.get(i).setQj(regFile[j].getQi());
 							} else {
 								reservationStation.get(i).setVj(regFile[j].getValue());

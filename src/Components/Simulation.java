@@ -40,7 +40,7 @@ public class Simulation {
             RegFile regFile, Cache cache, int addLatency, int subLatency, int divLatency, int mulLatency,
             int loadLatency, int storeLatency, ArrayList<IssuingEntry> queue) throws Exception {
         Parser p = new Parser();
-        this.instructions = p.parse("src//instructions.txt");
+        this.instructions = p.parse("instructions.txt");
         this.addSubRS = addSubRS;
         this.loadBuffer = loadBuffer;
         this.mulDivRS = mulDivRS;
@@ -134,6 +134,7 @@ public class Simulation {
 
             case "ADD":
             case "ADD.D":
+            case "DADD":
                 if (!addSubRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
@@ -147,6 +148,7 @@ public class Simulation {
 
             case "SUB":
             case "SUB.D":
+            case "DSUB":
                 if (!addSubRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
@@ -172,6 +174,8 @@ public class Simulation {
                 }
 
             case "MUL":
+            case "MUL.D":
+            case "DMUL":
                 if (!mulDivRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     mulDivRS.addNewEntry(currentInstruction, cycleCount);
@@ -184,6 +188,8 @@ public class Simulation {
                 }
 
             case "DIV":
+            case "DIV.D":
+            case "DDIV":
                 if (!mulDivRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     mulDivRS.addNewEntry(currentInstruction, cycleCount);
@@ -326,6 +332,7 @@ public class Simulation {
 
                 case "ADD":
                 case "ADD.D":
+                case "DADD":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
@@ -370,6 +377,7 @@ public class Simulation {
 
                 case "SUB":
                 case "SUB.D":
+                case "DSUB":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
@@ -413,6 +421,8 @@ public class Simulation {
                     break;
 
                 case "MUL":
+                case "DMUL":
+                case "MUL.D":
                     for (int j = 0; j < mulDivRS.reservationStation.size(); j++) {
                         if (mulDivRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = mulDivRS.reservationStation.get(j);
@@ -456,6 +466,8 @@ public class Simulation {
                     break;
 
                 case "DIV":
+                case "DDIV":
+                case "DIV.D":
                     for (int j = 0; j < mulDivRS.reservationStation.size(); j++) {
                         if (mulDivRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = mulDivRS.reservationStation.get(j);
@@ -705,19 +717,19 @@ public class Simulation {
             }
         }
 
-        if (operation.equals("ADD")||operation.equals("ADD.D")) {
+        if (operation.equals("ADD")||operation.equals("ADD.D")||operation.equals("DADD")) {
             result = r3Value + r2Value;
         }
 
-        else if (operation.equals("SUB")||operation.equals("SUB.D")) {
+        else if (operation.equals("SUB")||operation.equals("SUB.D")||operation.equals("DSUB")) {
             result = r2Value - r3Value;
         }
 
-        else if (operation.equals("MUL")) {
+        else if (operation.equals("MUL")||operation.equals("MUL.D")||operation.equals("DMUL")) {
             result = r3Value * r2Value;
         }
 
-        else if (operation.equals("DIV")) {
+        else if (operation.equals("DIV")||operation.equals("DIV.D")||operation.equals("DDIV")) {
             result = r2Value / r3Value;
         }
 
@@ -740,6 +752,7 @@ public class Simulation {
     }
 
     public void printCycle(int cycle) {
+        if(cycleCount<=10){
             System.out.println("Cycle: " + cycle + "\n////////////////////////");
             System.out.println(addSubRS.toString());
             System.out.println(mulDivRS.toString());
@@ -751,7 +764,7 @@ public class Simulation {
             HomeGUI.registerFile.setText(HomeGUI.registerFile.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ regFile.toString());
             System.out.println(cache.toString());
             HomeGUI.cache.setText(HomeGUI.cache.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ cache.toString());
-    }
+    }}
 
     public static void main(String[] args) throws Exception {
         LinkedList<ReservationStationEntry> addSubReservationStation = new LinkedList<>();
@@ -773,7 +786,7 @@ public class Simulation {
 
         regFile.loadIntoRegFile("R2", 5);
         // regFile.loadIntoRegFile("R1", 10);
-        regFile.loadIntoRegFile("R3", 10);
+        regFile.loadIntoRegFile("R10", 10);
         regFile.loadIntoRegFile("R1", 50);
 
         cache.preLoadValue(2, 10);

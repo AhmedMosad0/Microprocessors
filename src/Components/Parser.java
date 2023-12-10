@@ -41,6 +41,7 @@ public class Parser {
                         break;
                     case "ADD":
                     case "ADD.D":
+                    case "DADD":
                         operation = "ADD";
 
                         r1 = line[1];
@@ -49,6 +50,7 @@ public class Parser {
                         break;
                     case "SUB":
                     case "SUB.D":
+                    case "DSUB":
                         operation = "SUB";
 
                         r1 = line[1];
@@ -56,6 +58,8 @@ public class Parser {
                         r3 = line[3];
                         break;
                     case "MUL":
+                    case "DMUL":
+                    case "MUL.D":
                         operation = "MUL";
 
                         r1 = line[1];
@@ -63,6 +67,8 @@ public class Parser {
                         r3 = line[3];
                         break;
                     case "DIV":
+                    case "DDIV":
+                    case "DIV.D":
                         operation = "DIV";
 
                         r1 = line[1];
