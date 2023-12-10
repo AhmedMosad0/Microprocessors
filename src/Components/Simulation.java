@@ -777,11 +777,17 @@ public class Simulation {
         Scanner sc = new Scanner(System.in);
 
         // Read input values
+        System.out.print ("Enter add latency: ");
         int addLatency = Integer.parseInt(sc.nextLine());
+        System.out.print ("\nEnter sub latency: ");
         int subLatency = Integer.parseInt(sc.nextLine());
+        System.out.print ("\nEnter mul latency: ");
         int mulLatency = Integer.parseInt(sc.nextLine());
+        System.out.print ("\nEnter div latency: ");
         int divLatency = Integer.parseInt(sc.nextLine());
+        System.out.print ("\nEnter load latency: ");
         int loadLatency = Integer.parseInt(sc.nextLine());
+        System.out.print ("\nEnter store latency: ");
         int storeLatency = Integer.parseInt(sc.nextLine());
 
         // Close the scanner after reading all inputs
