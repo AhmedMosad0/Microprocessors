@@ -40,6 +40,7 @@ public class Parser {
                         address = Integer.parseInt(line[2]);
                         break;
                     case "ADD":
+                    case "ADD.D":
                         operation = "ADD";
 
                         r1 = line[1];
@@ -47,6 +48,7 @@ public class Parser {
                         r3 = line[3];
                         break;
                     case "SUB":
+                    case "SUB.D":
                         operation = "SUB";
 
                         r1 = line[1];

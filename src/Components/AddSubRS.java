@@ -48,7 +48,7 @@ public class AddSubRS {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
 
-					if (instruction.operation.equals("ADD") || instruction.operation.equals("SUB")
+					if (instruction.operation.equals("ADD") ||instruction.operation.equals("ADD.D")|| instruction.operation.equals("SUB.D")||instruction.operation.equals("SUB")
 							|| instruction.operation.equals("SUBI") || instruction.operation.equals("ADDI")) {
 
 						if (regFile[j].getRegName().equals(instruction.getR2())) {

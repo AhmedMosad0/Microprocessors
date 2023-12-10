@@ -133,6 +133,7 @@ public class Simulation {
                 }
 
             case "ADD":
+            case "ADD.D":
                 if (!addSubRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
@@ -145,6 +146,7 @@ public class Simulation {
                 }
 
             case "SUB":
+            case "SUB.D":
                 if (!addSubRS.isStationFull()) {
                     IssuingEntry entry = new IssuingEntry(currentInstruction, InstructionState.Issued);
                     addSubRS.addNewEntry(currentInstruction, cycleCount);
@@ -323,6 +325,7 @@ public class Simulation {
             switch (currentInstruction.operation) {
 
                 case "ADD":
+                case "ADD.D":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
@@ -366,6 +369,7 @@ public class Simulation {
                     break;
 
                 case "SUB":
+                case "SUB.D":
                     for (int j = 0; j < addSubRS.getSize(); j++) {
                         if (addSubRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = addSubRS.reservationStation.get(j);
@@ -701,11 +705,11 @@ public class Simulation {
             }
         }
 
-        if (operation.equals("ADD")) {
+        if (operation.equals("ADD")||operation.equals("ADD.D")) {
             result = r3Value + r2Value;
         }
 
-        else if (operation.equals("SUB")) {
+        else if (operation.equals("SUB")||operation.equals("SUB.D")) {
             result = r2Value - r3Value;
         }
 
@@ -770,9 +774,20 @@ public class Simulation {
         regFile.loadIntoRegFile("R1", 50);
 
         cache.preLoadValue(2, 10);
+        Scanner sc = new Scanner(System.in);
 
-        Simulation simulation = new Simulation(addSubRS, loadBuffer, mulDivRS, storeBuffer, regFile, cache, 2, 2, 2, 2,
-                1, 1, queue);
+        // Read input values
+        int addLatency = Integer.parseInt(sc.nextLine());
+        int subLatency = Integer.parseInt(sc.nextLine());
+        int mulLatency = Integer.parseInt(sc.nextLine());
+        int divLatency = Integer.parseInt(sc.nextLine());
+        int loadLatency = Integer.parseInt(sc.nextLine());
+        int storeLatency = Integer.parseInt(sc.nextLine());
+
+        // Close the scanner after reading all inputs
+        sc.close();
+        Simulation simulation = new Simulation(addSubRS, loadBuffer, mulDivRS, storeBuffer, regFile, cache,addLatency, subLatency, mulLatency, divLatency,
+               loadLatency , storeLatency, queue);
 
         simulation.runSimulation();
     }
