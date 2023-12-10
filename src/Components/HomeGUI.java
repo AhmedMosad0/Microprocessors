@@ -75,7 +75,7 @@ public class HomeGUI extends JFrame {
                 String content = programInstructions.getText();
 
                 // Write the content to a file
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter("src//instructions.txt"))) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("instructions.txt"))) {
                     writer.write(content);
                     writer.close();
 

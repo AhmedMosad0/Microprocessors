@@ -40,7 +40,7 @@ public class Simulation {
             RegFile regFile, Cache cache, int addLatency, int subLatency, int divLatency, int mulLatency,
             int loadLatency, int storeLatency, ArrayList<IssuingEntry> queue) throws Exception {
         Parser p = new Parser();
-        this.instructions = p.parse("src//instructions.txt");
+        this.instructions = p.parse("instructions.txt");
         this.addSubRS = addSubRS;
         this.loadBuffer = loadBuffer;
         this.mulDivRS = mulDivRS;
