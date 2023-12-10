@@ -126,6 +126,7 @@ public class MulDivRS {
 					"\nVk: " + entry.getVk() +
 					"\nQj: " + entry.getQj() +
 					"\nQk: " + entry.getQk() +
+					"\nResult: " + entry.getResult() +
 					"\n-------------------------\n";
 		}
 

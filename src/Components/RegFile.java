@@ -58,20 +58,13 @@ public class RegFile {
 
 	public String toString() {
 		String str = "Register File\n";
-		for (int i = 1 ; i < 5 ; i++) {
+		for (int i = 0 ; i < registerFile.length ; i++) {
 			str += "-------------------------\n" +
 					"\nRegister Name: " + registerFile[i].getRegName() +
 					"\nQi: " + registerFile[i].getQi() +
 					"\nValue: " + registerFile[i].getValue() +
 					"\n-------------------------\n";
 		}
-
-				str += "-------------------------\n" +
-					"\nRegister Name: " + registerFile[10].getRegName() +
-					"\nQi: " + registerFile[10].getQi() +
-					"\nValue: " + registerFile[10].getValue() +
-					"\n-------------------------\n";
-
 
 		return str;
 	}

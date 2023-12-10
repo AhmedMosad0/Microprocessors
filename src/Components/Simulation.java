@@ -40,7 +40,7 @@ public class Simulation {
             RegFile regFile, Cache cache, int addLatency, int subLatency, int divLatency, int mulLatency,
             int loadLatency, int storeLatency, ArrayList<IssuingEntry> queue) throws Exception {
         Parser p = new Parser();
-        this.instructions = p.parse("instructions.txt");
+        this.instructions = p.parse("src//instructions.txt");
         this.addSubRS = addSubRS;
         this.loadBuffer = loadBuffer;
         this.mulDivRS = mulDivRS;
@@ -743,11 +743,14 @@ public class Simulation {
             System.out.println("Cycle: " + cycle + "\n////////////////////////");
             System.out.println(addSubRS.toString());
             System.out.println(mulDivRS.toString());
+            HomeGUI.addMul.setText(HomeGUI.addMul.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ addSubRS.toString()+ "\n" + mulDivRS.toString());
             System.out.println(loadBuffer.toString());
             System.out.println(storeBuffer.toString());
+            HomeGUI.loadStore.setText(HomeGUI.loadStore.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ loadBuffer.toString()+ "\n" + storeBuffer.toString());
             System.out.println(regFile.toString());
+            HomeGUI.registerFile.setText(HomeGUI.registerFile.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ regFile.toString());
             System.out.println(cache.toString());
-        
+            HomeGUI.cache.setText(HomeGUI.cache.getText() + "\n" +"Cycle: " + cycle + "\n////////////////////////" + "\n"+ cache.toString());
     }
 
     public static void main(String[] args) throws Exception {
