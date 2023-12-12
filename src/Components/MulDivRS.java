@@ -34,7 +34,13 @@ public class MulDivRS {
 		}
 		return "";
 	}
+	public LinkedList<ReservationStationEntry> getReservationStation() {
+		return reservationStation;
+	}
 
+	public int getSize() {
+		return size;
+	}
 	public void addNewEntry(Instruction instruction, int cycleCount) {
 		RegFileEntry[] regFile = RegFile.getRegisterFile();
 
