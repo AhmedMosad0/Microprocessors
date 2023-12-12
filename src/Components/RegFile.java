@@ -1,5 +1,6 @@
 package Components;
 
+import Helpers.Instruction;
 import Helpers.RegFileEntry;
 import Helpers.ReservationStationEntry;
 
@@ -16,7 +17,7 @@ public class RegFile {
 		for(int i=0; i<32; i++) {
 			registerFile[i] = new RegFileEntry("R"+i, "0" , 0);
 		}
-		int c = 1;
+		int c = 0;
 		for(int j=32; j<64; j++) {
 			registerFile[j] = new RegFileEntry("F"+c, "0" , 0);
 			c++;
@@ -42,9 +43,9 @@ public class RegFile {
 	}
 	
 	//write result stage
-	void writeResultToRegFile(String regName, float value) {
+	void writeResultToRegFile(Instruction instruction, float value , String tag) {
 		for(int i=0; i< this.registerFile.length; i++) {
-			if(registerFile[i].getRegName().equals(regName)) {
+			if(registerFile[i].getRegName().equals(instruction.r1) && registerFile[i].getQi().equals(tag) ) {
 				registerFile[i].setValue(value);
 				registerFile[i].setQi("0");
 			}
@@ -59,6 +60,7 @@ public class RegFile {
 	public String toString() {
 		String str = "Register File\n";
 		for (int i = 0 ; i < registerFile.length ; i++) {
+			if(registerFile[i].getRegName().contains("F"))
 			str += "-------------------------\n" +
 					"\nRegister Name: " + registerFile[i].getRegName() +
 					"\nQi: " + registerFile[i].getQi() +

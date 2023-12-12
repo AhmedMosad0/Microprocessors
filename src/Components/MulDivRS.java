@@ -61,6 +61,7 @@ public class MulDivRS {
 					}
 					
 					if (regFile[j].getRegName().equals(instruction.getR1())) {
+						
 						regFile[j].setQi(reservationStation.get(i).getTag());
 					}
 				}
