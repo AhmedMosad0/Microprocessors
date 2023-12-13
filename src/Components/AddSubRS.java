@@ -136,7 +136,7 @@ public class AddSubRS {
 		String str = "AddSub Reservation Station\n";
 
 		for (ReservationStationEntry entry : reservationStation) {
-			str += "-------------------------\n" +
+			str += //"-------------------------\n" +
 					"Busy: " + entry.isBusy() +
 					"\nTag: " + entry.getTag() +
 					"\nOp: " + entry.getOperation() +

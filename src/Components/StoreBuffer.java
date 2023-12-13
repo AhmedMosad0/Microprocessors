@@ -111,7 +111,7 @@ public class StoreBuffer {
         String str = "Store Buffer\n";
 
         for (int i = 0; i < buffer.length; i++) {
-            str += "-------------------------\n" +
+            str += //"-------------------------\n" +
                     "Busy: " + buffer[i].busy +
                     "\nTag: " + buffer[i].getTag() +
                     "\nAddress: " + buffer[i].address +
