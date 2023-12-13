@@ -111,7 +111,7 @@ public class HomeGUI extends JFrame {
                     regFile.loadIntoRegFile("R2", 5);
                     // regFile.loadIntoRegFile("R1", 10);
                     regFile.loadIntoRegFile("R10", 10);
-                    regFile.loadIntoRegFile("R1", 50);
+                    regFile.loadIntoRegFile("R1", 2);
 
                     cache.preLoadValue(2, 10);
 

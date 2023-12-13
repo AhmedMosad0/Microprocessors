@@ -48,8 +48,9 @@ public class AddSubRS {
 			if (!reservationStation.get(i).isBusy()) {
 				for (int j = 0; j < regFile.length; j++) {
 
-					if (instruction.operation.equals("ADD") ||instruction.operation.equals("ADD.D")||instruction.operation.equals("DADD")|| instruction.operation.equals("SUB.D")||instruction.operation.equals("SUB")||instruction.operation.equals("DSUB")
-							|| instruction.operation.equals("SUBI") || instruction.operation.equals("ADDI")) {
+					if (instruction.operation.equals("ADD") || instruction.operation.equals("ADD.D")
+							|| instruction.operation.equals("DADD") || instruction.operation.equals("SUB.D")
+							|| instruction.operation.equals("SUB") || instruction.operation.equals("DSUB")) {
 
 						if (regFile[j].getRegName().equals(instruction.getR2())) {
 							if (!regFile[j].getQi().equals("0")) {
@@ -72,8 +73,8 @@ public class AddSubRS {
 						if (regFile[j].getRegName().equals(instruction.getR1())) {
 							regFile[j].setQi(reservationStation.get(i).getTag());
 						}
-						
-					} else {
+
+					} else if (instruction.operation.equals("BNEZ")) {
 
 						if (regFile[j].getRegName().equals(instruction.getR1())) {
 							if (!regFile[j].getQi().equals("0")) {
@@ -83,6 +84,24 @@ public class AddSubRS {
 								reservationStation.get(i).setQj("0");
 							}
 						}
+					}
+
+					else if (instruction.operation.equals("SUBI") || instruction.operation.equals("ADDI")) {
+						if (regFile[j].getRegName().equals(instruction.getR1())) {
+							if (!regFile[j].getQi().equals("0")) {
+								reservationStation.get(i).setQj(regFile[j].getQi());
+							} else {
+								reservationStation.get(i).setVj(regFile[j].getValue());
+								reservationStation.get(i).setQj("0");
+							}
+						}
+						
+						if (regFile[j].getRegName().equals(instruction.getR1())) {
+							regFile[j].setQi(reservationStation.get(i).getTag());
+						}
+						
+						reservationStation.get(i).setVk(instruction.immediate);
+
 					}
 				}
 				reservationStation.get(i).setBusy(true);
@@ -112,9 +131,9 @@ public class AddSubRS {
 	}
 
 	public boolean isStationFull() {
-		if(getFirstAvailableTag().equals(""))
+		if (getFirstAvailableTag().equals(""))
 			return true;
-		
+
 		return false;
 	}
 
@@ -136,16 +155,16 @@ public class AddSubRS {
 		String str = "AddSub Reservation Station\n";
 
 		for (ReservationStationEntry entry : reservationStation) {
-			str += //"-------------------------\n" +
+			str += // "-------------------------\n" +
 					"Busy: " + entry.isBusy() +
-					"\nTag: " + entry.getTag() +
-					"\nOp: " + entry.getOperation() +
-					"\nVj: " + entry.getVj() +
-					"\nVk: " + entry.getVk() +
-					"\nQj: " + entry.getQj() +
-					"\nQk: " + entry.getQk() +
-					"\nResult: " + entry.getResult() +
-					"\n-------------------------\n";
+							"\nTag: " + entry.getTag() +
+							"\nOp: " + entry.getOperation() +
+							"\nVj: " + entry.getVj() +
+							"\nVk: " + entry.getVk() +
+							"\nQj: " + entry.getQj() +
+							"\nQk: " + entry.getQk() +
+							"\nResult: " + entry.getResult() +
+							"\n-------------------------\n";
 		}
 
 		return str;

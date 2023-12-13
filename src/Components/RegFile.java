@@ -60,7 +60,6 @@ public class RegFile {
 	public String toString() {
 		String str = "Register File\n";
 		for (int i = 0 ; i < registerFile.length ; i++) {
-			if(registerFile[i].getRegName().contains("F"))
 			str += "-------------------------\n" +
 					"\nRegister Name: " + registerFile[i].getRegName() +
 					"\nQi: " + registerFile[i].getQi() +

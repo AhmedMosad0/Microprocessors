@@ -589,15 +589,11 @@ public class Simulation {
                         if (mulDivRS.reservationStation.get(j).getEntryCycle() == queue.get(i).getIssueCycle()) {
                             ReservationStationEntry current = mulDivRS.reservationStation.get(j);
                             if (current.getQj().equals("0") && current.getQk().equals("0")) {
-                                  System.out.println("state is" + queue.get(i).getState());
-                                System.out.println("TAG :" + current.getTag());
                                 if (queue.get(i).getState().equals(InstructionState.Writing) && !write) {
-                                    System.out.println("TAG :" + current.getTag());
                                     write = true;
                                     // regFile.writeResultToRegFile(currentInstruction, current.getResult() ,
                                     // current.getTag());
                                     performPublish(current,tages);
-                                    System.out.println("" + current.getTag());
                                     mulDivRS.delMulDivEntry(current.getTag());
                                     queue.get(i).setState(InstructionState.Finished);
                                     queue.remove(i);
@@ -605,9 +601,6 @@ public class Simulation {
                                 }
 
                                 else if (queue.get(i).getState().equals(InstructionState.Executing)) {
-                                    System.out.println("elstart exc" + queue.get(i).getStartExecution());
-                                    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaa"
-                                            + (queue.get(i).getStartExecution() + mulLatency - 1));
 
                                     if ((queue.get(i).getStartExecution() + mulLatency  == cycleCount)) {
                                         current.setResult(alu(currentInstruction));
@@ -928,25 +921,34 @@ public class Simulation {
 
     public void printCycle(int cycle) {
    
+        // if(cycleCount <= 15){
         System.out.println("Cycle: " + cycle + "\n////////////////////////");
-        System.out.println(addSubRS.toString());
-        System.out.println(mulDivRS.toString());
-        // HomeGUI.addMul.setText(HomeGUI.addMul.getText() + "\n" + "Cycle: " + cycle +
-        // "\n////////////////////////" + "\n"
-        // + addSubRS.toString() + "\n" + mulDivRS.toString());
-        System.out.println(loadBuffer.toString());
-        System.out.println(storeBuffer.toString());
-        // HomeGUI.loadStore.setText(HomeGUI.loadStore.getText() + "\n" + "Cycle: " +
-        // cycle + "\n////////////////////////"
-        // + "\n" + loadBuffer.toString() + "\n" + storeBuffer.toString());
-        //System.out.println(regFile.toString());
-        // HomeGUI.registerFile.setText(HomeGUI.registerFile.getText() + "\n" + "Cycle:
-        // " + cycle
-        // + "\n////////////////////////" + "\n" + regFile.toString());
+       System.out.println(addSubRS.toString());
+       System.out.println(mulDivRS.toString());
+
+        HomeGUI.addMul.setText(HomeGUI.addMul.getText() + "\n" + "Cycle: " + cycle +
+        "\n////////////////////////" + "\n"
+        + addSubRS.toString() + "\n" + mulDivRS.toString());
+
+       System.out.println(loadBuffer.toString());
+       System.out.println(storeBuffer.toString());
+
+        HomeGUI.loadStore.setText(HomeGUI.loadStore.getText() + "\n" + "Cycle: " +
+        cycle + "\n////////////////////////"
+        + "\n" + loadBuffer.toString() + "\n" + storeBuffer.toString());
+
+        System.out.println(regFile.toString());
+
+        HomeGUI.registerFile.setText(HomeGUI.registerFile.getText() + "\n" + "Cycle:"
+         + cycle
+        + "\n////////////////////////" + "\n" + regFile.toString());
+
         // System.out.println(cache.toString());
-        // HomeGUI.cache.setText(HomeGUI.cache.getText() + "\n" + "Cycle: " + cycle +
-        // "\n////////////////////////" + "\n"
-        // + cache.toString());
+
+        HomeGUI.cache.setText(HomeGUI.cache.getText() + "\n" + "Cycle: " + cycle +
+        "\n////////////////////////" + "\n"
+        + cache.toString());
+        // }
     
     }
     public static void main(String[] args) throws Exception {
@@ -955,10 +957,10 @@ public class Simulation {
         ArrayList<CacheEntry> cacheEntries = new ArrayList<>();
         ArrayList<IssuingEntry> queue = new ArrayList<>();
 
-        AddSubRS addSubRS = new AddSubRS(addSubReservationStation, 2);
-        MulDivRS mulDivRS = new MulDivRS(mulDivReservationStation, 2);
-        StoreBuffer storeBuffer = StoreBuffer.getInstance(2);
-        LoadBuffer loadBuffer = LoadBuffer.getInstance(2);
+        AddSubRS addSubRS = new AddSubRS(addSubReservationStation, 3);
+        MulDivRS mulDivRS = new MulDivRS(mulDivReservationStation, 3);
+        StoreBuffer storeBuffer = StoreBuffer.getInstance(3);
+        LoadBuffer loadBuffer = LoadBuffer.getInstance(3);
         Cache cache = new Cache(cacheEntries);
         RegFile regFile = new RegFile();
 
@@ -967,10 +969,7 @@ public class Simulation {
         regFile.initializeRegFile();
         cache.initializeCache();
 
-        regFile.loadIntoRegFile("R2", 5);
-        regFile.loadIntoRegFile("R1", 2);
-        regFile.loadIntoRegFile("R10", 10);
-      //  regFile.loadIntoRegFile("R1", 50);
+         regFile.loadIntoRegFile("R1", 2);
 
         cache.preLoadValue(2, 10);
         Scanner sc = new Scanner(System.in);
